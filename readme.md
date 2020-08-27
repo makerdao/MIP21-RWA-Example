@@ -8,6 +8,9 @@
 
 ## todo:
 
-- `RwaSpell`: which deploys and activates a new collateral type
+- `RwaInitSpell`: which deploys and activates a new collateral type
 - intermediary wallet contracts for handling disbursement and repayment of DAI.
+- `RwaLiquidateSpell`: which allows MakerDAO governance to initiate liquidation proceedings.
+- `RwaRemedySpell`: which allows MakerDAO governance to dismiss liquidation proceedings.
+- `RwaWriteoffSpell`: which allows MakerDAO governance to write off a loan which was in liquidation.
 - ???
