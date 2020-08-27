@@ -15,6 +15,7 @@ contract RwaLiquidationOracle {
     }
 
     struct Ilk {
+        bytes32 doc;
         PipLike pip;
         uint48  tau;
         uint48  toc;
@@ -26,9 +27,10 @@ contract RwaLiquidationOracle {
     }
 
     function init(bytes32 ilk, bytes32 doc, address pip, uint48 tau) external auth {
-        // pip and tau can be amended, tau cannot decrease
+        // pip, doc, and tau can be amended, but tau cannot decrease
         require(tau >= ilks[ilk].tau);
         ilks[ilk].pip = PipLike(pip);
+        ilks[ilk].doc = doc;
         ilks[ilk].tau = tau;
     }
 
