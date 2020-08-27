@@ -25,8 +25,9 @@ contract RwaLiquidationOracle {
         wards[msg.sender] = 1;
     }
 
-    function init(bytes32 ilk, address pip, uint48 tau) external auth {
-        // pip and tau can be overwritten
+    function init(bytes32 ilk, bytes32 doc, address pip, uint48 tau) external auth {
+        // pip and tau can be amended, tau cannot decrease
+        require(tau >= ilks[ilk].tau);
         ilks[ilk].pip = PipLike(pip);
         ilks[ilk].tau = tau;
     }
