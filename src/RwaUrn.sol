@@ -1,4 +1,4 @@
-pragma solidity >=0.5.12;
+pragma solidity 0.5.12;
 
 contract VatLike {
     function frob(bytes32, address, address, address, int, int) public;
@@ -7,13 +7,6 @@ contract VatLike {
 contract GemLike {
     function transfer(address, uint) public returns (bool);
     function transferFrom(address, address, uint) public returns (bool);
-}
-
-contract JoinLike {
-    function ilk() public returns (bytes32);
-    function gem() public returns (GemLike);
-    function join(address, uint) public;
-    function exit(address, uint) public;
 }
 
 contract RwaUrn {
