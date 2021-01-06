@@ -14,3 +14,15 @@
 - `RwaRemedySpell`: which allows MakerDAO governance to dismiss liquidation proceedings.
 - `RwaWriteoffSpell`: which allows MakerDAO governance to write off a loan which was in liquidation.
 - ???
+
+## deploy
+
+### kovan
+```
+make deploy-kovan
+```
+
+### mainnet
+```
+make deploy-mainnet
+```

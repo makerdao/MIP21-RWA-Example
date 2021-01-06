@@ -6,6 +6,8 @@ import {RwaFlipper} from "./RwaFlipper.sol";
 import {RwaLiquidationOracle} from "./RwaLiquidationOracle.sol";
 import {RwaUrn} from "./RwaUrn.sol";
 
+// TODO: make some unit tests
+
 contract RwaExampleTest is DSTest {
     RwaFlipper flip;
     RwaLiquidationOracle oracle;
