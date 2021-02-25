@@ -10,3 +10,9 @@
 [submodule "lib/dss-gem-joins"]
 	path = lib/dss-gem-joins
 	url = https://github.com/makerdao/dss-gem-joins
+[submodule "lib/ds-value"]
+	path = lib/ds-value
+	url = https://github.com/dapphub/ds-value
+[submodule "lib/dss"]
+	path = lib/dss
+	url = https://github.com/makerdao/dss
