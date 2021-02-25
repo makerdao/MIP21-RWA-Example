@@ -193,9 +193,9 @@ contract BumpSpell is TestSpell {
 
 contract DssSpellTest is DSTest, DSMath {
     // populate with mainnet spell if needed
-    address constant KOVAN_SPELL = address(0xbC0932389c4374380325e369398201cCeE3b9eBe);
+    address constant KOVAN_SPELL = address(0xdCB87e8149F7bE368ec077b0D92C7ADAC8bB919e);
     // this needs to be updated
-    uint256 constant SPELL_CREATED = 1614270276 ;
+    uint256 constant SPELL_CREATED = 1614270940;
 
     struct CollateralValues {
         uint256 line;
