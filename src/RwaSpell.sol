@@ -106,7 +106,7 @@ contract SpellAction {
 
         // bump changelog version
         // TODO make sure to update this version on mainnet
-        CHANGELOG.setVersion("1.2.8");
+        // CHANGELOG.setVersion("1.2.9");
 
         // Sanity checks
         require(GemJoinAbstract(MCD_JOIN_RWA001_A).vat() == MCD_VAT, "join-vat-not-match");
