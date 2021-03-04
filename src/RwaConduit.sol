@@ -31,7 +31,7 @@ contract RwaInputConduit {
     }
 
     function push() external {
-        require(gov.balanceOf(msg.sender) > 0);
+        require(gov.balanceOf(msg.sender) > 0, "RwaConduit/no-gov");
         uint256 balance = dai.balanceOf(address(this));
         emit Push(to, balance);
         dai.transfer(to, balance);
