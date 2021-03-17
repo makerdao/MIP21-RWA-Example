@@ -15,8 +15,8 @@
 
 pragma solidity >=0.5.12;
 
-import "lib/dss-interfaces/src/dss/VatAbstract.sol";
-import 'ds-value/value.sol';
+import "dss-interfaces/dss/VatAbstract.sol";
+import "ds-value/value.sol";
 
 contract RwaLiquidationOracle {
     // --- auth ---
