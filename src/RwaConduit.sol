@@ -15,7 +15,7 @@
 
 pragma solidity 0.5.12;
 
-import "lib/dss-interfaces/src/dapp/DSTokenAbstract.sol";
+import "dss-interfaces/dapp/DSTokenAbstract.sol";
 
 contract RwaInputConduit {
     DSTokenAbstract public gov;

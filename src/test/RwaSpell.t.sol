@@ -6,7 +6,7 @@ import "ds-value/value.sol";
 
 import "ds-math/math.sol";
 import "ds-test/test.sol";
-import "lib/dss-interfaces/src/Interfaces.sol";
+import "dss-interfaces/Interfaces.sol";
 import "./rates.sol";
 import "./addresses_kovan.sol";
 
