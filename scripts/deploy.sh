@@ -61,9 +61,11 @@ seth send "${RWA_JOIN}" 'deny(address)' "${ETH_FROM}"
 [[ -z "RWA_INPUT_CONDUIT" ]] && RWA_INPUT_CONDUIT=$(dapp create RwaInputConduit "${MCD_GOV}" "${MCD_DAI}" "${RWA_URN}")
 
 # price it
-MIP21_LIQUIDATION_ORACLE=$(dapp create RwaLiquidationOracle "${MCD_VAT}" "${MCD_VOW}")
-seth send "${MIP21_LIQUIDATION_ORACLE}" 'rely(address)' "${MCD_PAUSE_PROXY}"
-seth send "${MIP21_LIQUIDATION_ORACLE}" 'deny(address)' "${ETH_FROM}"
+if [ ! -n "$MIP21_LIQUIDATION_ORACLE" ]; then
+    MIP21_LIQUIDATION_ORACLE=$(dapp create RwaLiquidationOracle "${MCD_VAT}" "${MCD_VOW}")
+    seth send "${MIP21_LIQUIDATION_ORACLE}" 'rely(address)' "${MCD_PAUSE_PROXY}"
+    seth send "${MIP21_LIQUIDATION_ORACLE}" 'deny(address)' "${ETH_FROM}"
+fi
 
 # print it
 echo "OPERATOR: ${OPERATOR}"
