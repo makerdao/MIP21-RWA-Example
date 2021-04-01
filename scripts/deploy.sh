@@ -15,7 +15,7 @@ export ETH_GAS=6000000
 SYMBOL="RWA001"
 LETTER="A"
 ILK="${SYMBOL}-${LETTER}"
-OPERATOR="0xD23beB204328D7337e3d2Fb9F150501fDC633B0e"
+[[ -z "OPERATOR" ]] && OPERATOR="0xD23beB204328D7337e3d2Fb9F150501fDC633B0e"
 
 # kovan only
 TRUST1="0xda0fab060e6cc7b1C0AA105d29Bd50D71f036711"
@@ -31,13 +31,16 @@ RWA_TOKEN=$(dapp create RwaToken)
 seth send "${RWA_TOKEN}" 'transfer(address,uint256)' "$OPERATOR" $(seth --to-wei 1.0 ether)
 
 # route it
-RWA_OUTPUT_CONDUIT=$(dapp create RwaOutputConduit "${MCD_GOV}" "${MCD_DAI}")
-seth send "${RWA_OUTPUT_CONDUIT}" 'rely(address)' "${MCD_PAUSE_PROXY}"
-if [ "$1" == "kovan" ]; then
-    seth send "${RWA_OUTPUT_CONDUIT}" 'kiss(address)' "${TRUST1}"
-    seth send "${RWA_OUTPUT_CONDUIT}" 'kiss(address)' "${TRUST2}"
+[[ -z "$RWA_OUTPUT_CONDUIT" ]] && RWA_OUTPUT_CONDUIT=$(dapp create RwaOutputConduit "${MCD_GOV}" "${MCD_DAI}")
+
+if [ "$RWA_OUTPUT_CONDUIT" != "$OPERATOR" ]; then
+    seth send "${RWA_OUTPUT_CONDUIT}" 'rely(address)' "${MCD_PAUSE_PROXY}"
+    if [ "$1" == "kovan" ]; then
+        seth send "${RWA_OUTPUT_CONDUIT}" 'kiss(address)' "${TRUST1}"
+        seth send "${RWA_OUTPUT_CONDUIT}" 'kiss(address)' "${TRUST2}"
+    fi
+    seth send "${RWA_OUTPUT_CONDUIT}" 'deny(address)' "${ETH_FROM}"
 fi
-seth send "${RWA_OUTPUT_CONDUIT}" 'deny(address)' "${ETH_FROM}"
 
 # join it
 RWA_JOIN=$(dapp create AuthGemJoin "${MCD_VAT}" "${ILK_ENCODED}" "${RWA_TOKEN}")
@@ -55,12 +58,14 @@ seth send "${RWA_JOIN}" 'rely(address)' "${RWA_URN}"
 seth send "${RWA_JOIN}" 'deny(address)' "${ETH_FROM}"
 
 # connect it
-RWA_INPUT_CONDUIT=$(dapp create RwaInputConduit "${MCD_GOV}" "${MCD_DAI}" "${RWA_URN}")
+[[ -z "RWA_INPUT_CONDUIT" ]] && RWA_INPUT_CONDUIT=$(dapp create RwaInputConduit "${MCD_GOV}" "${MCD_DAI}" "${RWA_URN}")
 
 # price it
-MIP21_LIQUIDATION_ORACLE=$(dapp create RwaLiquidationOracle "${MCD_VAT}" "${MCD_VOW}")
-seth send "${MIP21_LIQUIDATION_ORACLE}" 'rely(address)' "${MCD_PAUSE_PROXY}"
-seth send "${MIP21_LIQUIDATION_ORACLE}" 'deny(address)' "${ETH_FROM}"
+if [ ! -n "$MIP21_LIQUIDATION_ORACLE" ]; then
+    MIP21_LIQUIDATION_ORACLE=$(dapp create RwaLiquidationOracle "${MCD_VAT}" "${MCD_VOW}")
+    seth send "${MIP21_LIQUIDATION_ORACLE}" 'rely(address)' "${MCD_PAUSE_PROXY}"
+    seth send "${MIP21_LIQUIDATION_ORACLE}" 'deny(address)' "${ETH_FROM}"
+fi
 
 # print it
 echo "OPERATOR: ${OPERATOR}"
