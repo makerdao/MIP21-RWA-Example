@@ -28,7 +28,7 @@ dapp --use solc:0.5.12 build
 
 # tokenize it
 RWA_TOKEN=$(dapp create RwaToken)
-seth send "${RWA_TOKEN}" 'transfer(address,uint256)' "$OPERATOR" $(seth --to-wei 1.0 ether)
+seth send "${RWA_TOKEN}" 'transfer(address,uint256)' "$OPERATOR" "$(seth --to-wei 1.0 ether)"
 
 # route it
 [[ -z "$RWA_OUTPUT_CONDUIT" ]] && RWA_OUTPUT_CONDUIT=$(dapp create RwaOutputConduit "${MCD_GOV}" "${MCD_DAI}")
