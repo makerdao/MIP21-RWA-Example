@@ -26,8 +26,11 @@ ILK_ENCODED=$(seth --to-bytes32 "$(seth --from-ascii ${ILK})")
 # build it
 dapp --use solc:0.5.12 build
 
+[[ -z "$NAME" ]] && NAME="RWA-001";
+[[ -z "$SYMBOL" ]] && SYMBOL="RWA001";
+
 # tokenize it
-RWA_TOKEN=$(dapp create RwaToken)
+RWA_TOKEN=$(dapp create "src/RwaToken.sol:RwaToken" \"$NAME\" \"$SYMBOL\")
 seth send "${RWA_TOKEN}" 'transfer(address,uint256)' "$OPERATOR" "$(seth --to-wei 1.0 ether)"
 
 # route it
