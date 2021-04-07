@@ -12,7 +12,7 @@ source ./scripts/build-env-addresses.sh "$1" > /dev/null 2>&1
 
 export ETH_GAS=6000000
 
-SYMBOL="RWA001"
+SYMBOL="RWA002"
 LETTER="A"
 ILK="${SYMBOL}-${LETTER}"
 [[ -z "OPERATOR" ]] && OPERATOR="0xD23beB204328D7337e3d2Fb9F150501fDC633B0e"
@@ -27,6 +27,7 @@ ILK_ENCODED=$(seth --to-bytes32 "$(seth --from-ascii ${ILK})")
 dapp --use solc:0.5.12 build
 
 # tokenize it
+# TODO: make sure you change the RwaToken code for the correct name/symbol
 RWA_TOKEN=$(dapp create RwaToken)
 seth send "${RWA_TOKEN}" 'transfer(address,uint256)' "$OPERATOR" "$(seth --to-wei 1.0 ether)"
 

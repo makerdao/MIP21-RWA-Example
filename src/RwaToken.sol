@@ -17,8 +17,8 @@ pragma solidity 0.5.12;
 
 contract RwaToken {
     // --- ERC20 Data ---
-    string  public constant name     = "RWA-001";
-    string  public constant symbol   = "RWA001";
+    string  public constant name     = "RWA-002";
+    string  public constant symbol   = "RWA002";
     uint8   public constant decimals = 18;
     uint256 public totalSupply;
 
