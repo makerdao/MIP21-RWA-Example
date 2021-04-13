@@ -10,7 +10,7 @@ import "dss-interfaces/dss/ChainlogAbstract.sol";
 
 interface RwaLiquidationLike {
     function wards(address) external returns (uint256);
-    function ilks(bytes32) external returns (bytes32,address,uint48,uint48);
+    function ilks(bytes32) external returns (string memory,address,uint48,uint48);
     function rely(address) external;
     function deny(address) external;
     function init(bytes32, uint256, string calldata, uint48) external;
