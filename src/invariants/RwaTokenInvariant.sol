@@ -14,13 +14,15 @@ contract MockHolder {
 
 /// @dev Invariant testing
 contract RwaTokenInvariant {
-
     RwaToken internal rwa;
     address internal holder;
 
+    string  public constant name     = "RWA-001";
+    string  public constant symbol   = "RWA001";
+
     /// @dev Instantiate the RwaToken contract, and a holder address that will return rwa when asked to.
     constructor () public {
-        rwa = new RwaToken();
+        rwa = new RwaToken(name, symbol);
         holder = address(new MockHolder(address(rwa), address(this)));
     }
 

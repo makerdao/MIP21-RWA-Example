@@ -136,6 +136,9 @@ contract RwaExampleTest is DSTest, DSMath, TryPusher {
     uint256 ceiling = 400 ether;
     string doc = "Please sign on the dotted line.";
 
+    string  public constant name     = "RWA-001";
+    string  public constant symbol   = "RWA001";
+
     function rad(uint wad) internal pure returns (uint) {
         return wad * 10 ** 27;
     }
@@ -148,7 +151,7 @@ contract RwaExampleTest is DSTest, DSMath, TryPusher {
         gov.mint(100 ether);
 
         // deploy rwa token
-        rwa = new RwaToken();
+        rwa = new RwaToken(name, symbol);
 
         // standard Vat setup
         vat = new Vat();

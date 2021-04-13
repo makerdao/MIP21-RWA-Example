@@ -17,8 +17,9 @@ pragma solidity 0.5.12;
 
 contract RwaToken {
     // --- ERC20 Data ---
-    string  public constant name     = "RWA-002";
-    string  public constant symbol   = "RWA002";
+    string  public name;
+    string  public symbol;
+
     uint8   public constant decimals = 18;
     uint256 public totalSupply;
 
@@ -37,8 +38,10 @@ contract RwaToken {
         require((z = x - y) <= x);
     }
 
-    constructor() public {
+    constructor(string memory name_, string memory symbol_) public {
         balanceOf[msg.sender] = 1 * WAD;
+        name = name_;
+        symbol = symbol_;
         totalSupply = 1 * WAD;
     }
 
