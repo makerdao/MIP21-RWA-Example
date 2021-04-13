@@ -12,7 +12,7 @@ source ./scripts/build-env-addresses.sh "$1" > /dev/null 2>&1
 
 export ETH_GAS=6000000
 
-SYMBOL="RWA001"
+SYMBOL="RWA002"
 LETTER="A"
 ILK="${SYMBOL}-${LETTER}"
 [[ -z "OPERATOR" ]] && OPERATOR="0xD23beB204328D7337e3d2Fb9F150501fDC633B0e"
