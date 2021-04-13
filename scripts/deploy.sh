@@ -12,22 +12,21 @@ source ./scripts/build-env-addresses.sh "$1" > /dev/null 2>&1
 
 export ETH_GAS=6000000
 
-SYMBOL="RWA002"
-LETTER="A"
-ILK="${SYMBOL}-${LETTER}"
-[[ -z "OPERATOR" ]] && OPERATOR="0xD23beB204328D7337e3d2Fb9F150501fDC633B0e"
+[[ -z "$NAME" ]] && NAME="RWA-002";
+[[ -z "$SYMBOL" ]] && SYMBOL="RWA002";
+[[ -z "$LETTER" ]] && LETTER="A";
+[[ -z "$OPERATOR" ]] && OPERATOR="0x8905C7066807793bf9c7cd1d236DEF0eE2692B9a"
+[[ -z "$MIP21_LIQUIDATION_ORACLE" ]] && MIP21_LIQUIDATION_ORACLE="0x2881c5dF65A8D81e38f7636122aFb456514804CC"
 
 # kovan only
 TRUST1="0xda0fab060e6cc7b1C0AA105d29Bd50D71f036711"
 TRUST2="0xDA0111100cb6080b43926253AB88bE719C60Be13"
 
+ILK="${SYMBOL}-${LETTER}"
 ILK_ENCODED=$(seth --to-bytes32 "$(seth --from-ascii ${ILK})")
 
 # build it
 dapp --use solc:0.5.12 build
-
-[[ -z "$NAME" ]] && NAME="RWA-001";
-[[ -z "$SYMBOL" ]] && SYMBOL="RWA001";
 
 # tokenize it
 RWA_TOKEN=$(dapp create "src/RwaToken.sol:RwaToken" \"$NAME\" \"$SYMBOL\")
@@ -61,10 +60,10 @@ seth send "${RWA_JOIN}" 'rely(address)' "${RWA_URN}"
 seth send "${RWA_JOIN}" 'deny(address)' "${ETH_FROM}"
 
 # connect it
-[[ -z "RWA_INPUT_CONDUIT" ]] && RWA_INPUT_CONDUIT=$(dapp create RwaInputConduit "${MCD_GOV}" "${MCD_DAI}" "${RWA_URN}")
+[[ -z "$RWA_INPUT_CONDUIT" ]] && RWA_INPUT_CONDUIT=$(dapp create RwaInputConduit "${MCD_GOV}" "${MCD_DAI}" "${RWA_URN}")
 
 # price it
-if [ ! -n "$MIP21_LIQUIDATION_ORACLE" ]; then
+if [ -z "$MIP21_LIQUIDATION_ORACLE" ]; then
     MIP21_LIQUIDATION_ORACLE=$(dapp create RwaLiquidationOracle "${MCD_VAT}" "${MCD_VOW}")
     seth send "${MIP21_LIQUIDATION_ORACLE}" 'rely(address)' "${MCD_PAUSE_PROXY}"
     seth send "${MIP21_LIQUIDATION_ORACLE}" 'deny(address)' "${ETH_FROM}"
