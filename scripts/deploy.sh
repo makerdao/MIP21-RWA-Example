@@ -4,27 +4,33 @@
 
 set -e
 
-[[ "$1" == "ethlive" || "$1" == "kovan" ]] || { echo "Please specify the network [ ethlive, kovan ]."; exit 1; }
-[[ "$ETH_RPC_URL" && "$(seth chain)" == "$1" ]] || { echo "Please set a $1 ETH_RPC_URL"; exit 1; }
+[[ "$1" == "ethlive" || "$1" == "kovan" || "$1" == "goerli" ]] || {
+    echo "Please specify the network [ ethlive, kovan, goerli ].";
+    exit 1;
+}
+[[ "$ETH_RPC_URL" && "$(seth chain)" == "$1" ]] || {
+    echo "Please set a $1 ETH_RPC_URL";
+    exit 1;
+}
 
 # shellcheck disable=SC1091
 source ./scripts/build-env-addresses.sh "$1" > /dev/null 2>&1
 
 export ETH_GAS=6000000
 
-[[ -z "$NAME" ]] && NAME="RWA-006";
-[[ -z "$SYMBOL" ]] && SYMBOL="RWA006";
+[[ -z "$NAME" ]] && NAME="RWA-001";
+[[ -z "$SYMBOL" ]] && SYMBOL="RWA001";
 [[ -z "$LETTER" ]] && LETTER="A";
-[[ -z "$OPERATOR" ]] && OPERATOR="0x8Fe38D1E4293181273E2e323e4c16e0D1d4861e3"
-[[ -z "$MIP21_LIQUIDATION_ORACLE" ]] && MIP21_LIQUIDATION_ORACLE="0x88f88Bb9E66241B73B84f3A6E197FbBa487b1E30"
+[[ -z "$OPERATOR" ]] && OPERATOR="0xD23beB204328D7337e3d2Fb9F150501fDC633B0e"
+# [[ -z "$MIP21_LIQUIDATION_ORACLE" ]] && MIP21_LIQUIDATION_ORACLE="0xDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF"
 
 # for the TinlakeManager
 # RWA_OUTPUT_CONDUIT=$OPERATOR
 # RWA_INPUT_CONDUIT=$OPERATOR
 
-# kovan only
-TRUST1="0xda0fab060e6cc7b1C0AA105d29Bd50D71f036711"
-TRUST2="0xDA0111100cb6080b43926253AB88bE719C60Be13"
+# kovan, goerli only
+TRUST1="0xDA0FaB0700A4389F6E6679aBAb1692B4601ce9bf"
+TRUST2="0xdA0C0de01d90A5933692Edf03c7cE946C7c50445"
 
 ILK="${SYMBOL}-${LETTER}"
 ILK_ENCODED=$(seth --to-bytes32 "$(seth --from-ascii ${ILK})")
