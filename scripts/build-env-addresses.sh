@@ -8,7 +8,7 @@
 #    `./scripts/build-env-addresses.sh [ URL | network ] > env-addresses-network`
 
 function validate_url() {
-  if [[ `curl -I $1 2>&1 | egrep 'HTTP/(1.1|2) 200'` ]]; then
+  if [[ `curl -I $1 2>&1 | egrep 'HTTP/(1.1|2) [23][0-9]+'` ]]; then
     return 0
   else
     return 1
@@ -36,7 +36,7 @@ fi
 if validate_url $URL; then
   echo "# Deployment addresses generated from:"
   echo "# $URL"
-  ADDRESSES_RAW="$(curl -s $URL)"
+  ADDRESSES_RAW="$(curl -Ls $URL)"
 else
   echo "# Invalid URL $URL"
   [ -z "$PS1" ] && exit || return
