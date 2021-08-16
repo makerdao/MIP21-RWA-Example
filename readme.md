@@ -26,6 +26,11 @@ The following can be found in `src/test/RwaSpell.t.sol`:
 make deploy-kovan
 ```
 
+### goerli
+```
+make deploy-goerli
+```
+
 ### mainnet
 ```
 make deploy-mainnet
