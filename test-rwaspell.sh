@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-[[ "$ETH_RPC_URL" && "$(seth chain)" == "kovan" ]] || { echo "Please set a kovan ETH_RPC_URL"; exit 1; }
+[[ "$ETH_RPC_URL" && ( "$(seth chain)" == "kovan" || "$(seth chain)" == "goerli" ) ]] || { echo "Please set a kovan ETH_RPC_URL"; exit 1; }
 
 dapp --use solc:0.5.12 build
 
