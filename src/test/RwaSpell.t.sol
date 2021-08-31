@@ -807,6 +807,12 @@ contract DssSpellTest is DSTest, DSMath {
 
         hevm.warp(now + 10 days); // Let rate be > 1
 
+        // put 1 conti of MKR into this contract to push
+        hevm.store(
+            address(gov),
+            keccak256(abi.encode(address(this), uint256(1))),
+            bytes32(uint256(1))
+        );
         hevm.store(
             address(rwagem),
             keccak256(abi.encode(address(this), uint256(0))),
@@ -823,6 +829,9 @@ contract DssSpellTest is DSTest, DSMath {
             keccak256(abi.encode(address(this), uint256(1))),
             bytes32(uint256(1))
         );
+
+        (uint256 preInk, uint256 preArt) = vat.urns(ilk, address(rwaurn));
+
         assertEq(rwagem.totalSupply(), 1 * WAD);
         assertEq(rwagem.balanceOf(address(this)), 1 * WAD);
         assertEq(rwaurn.can(address(this)), 1);
@@ -832,13 +841,14 @@ contract DssSpellTest is DSTest, DSMath {
         assertEq(dai.balanceOf(address(rwaconduitout)), 0);
         rwaurn.draw(1 * WAD);
 
-        (, uint256 rate,,,) = vat.ilks("RWA001-A");
+        (, uint rate,,,) = vat.ilks("RWA001-A");
 
         uint256 dustInVat = vat.dai(address(rwaurn));
 
         (uint256 ink, uint256 art) = vat.urns(ilk, address(rwaurn));
-        assertEq(ink, 1 * WAD);
-        assertEq(art, (1 * RAD + dustInVat) / rate);
+        assertEq(ink, 1 * WAD + preInk);
+        uint256 currArt = ((1 * RAD + dustInVat) / rate) + preArt;
+        assertTrue(art >= currArt - 2 && art <= currArt + 2); // approximation for vat rounding
         assertEq(dai.balanceOf(address(rwaconduitout)), 1 * WAD);
 
         // wards
@@ -868,8 +878,10 @@ contract DssSpellTest is DSTest, DSMath {
         hevm.warp(now + 10 days);
 
         (ink, art) = vat.urns(ilk, address(rwaurn));
-        assertEq(ink, 1 * WAD);
-        assertEq(art, (1 * RAD + dustInVat) / rate);
+        assertEq(ink, 1 * WAD + preInk);
+        currArt = ((1 * RAD + dustInVat) / rate) + preArt;
+        assertTrue(art >= currArt - 2 && art <= currArt + 2); // approximation for vat rounding
+
         (ink,) = vat.urns(ilk, address(this));
         assertEq(ink, 0);
 
@@ -896,8 +908,8 @@ contract DssSpellTest is DSTest, DSMath {
         rwaurn.wipe(daiToPay);
         rwaurn.free(1 * WAD);
         (ink, art) = vat.urns(ilk, address(rwaurn));
-        assertEq(ink, 0);
-        assertEq(art, 0);
+        assertEq(ink, preInk);
+        assertTrue(art < 4); // wad -> rad conversion in wipe leaves some dust
         (ink,) = vat.urns(ilk, address(this));
         assertEq(ink, 0);
     }
