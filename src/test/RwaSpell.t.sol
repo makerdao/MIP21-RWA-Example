@@ -644,8 +644,11 @@ contract DssSpellTest is DSTest, DSMath {
             assertEq(spell.expiration(), (SPELL_CREATED + 30 days));
         }
 
-        vote(address(spell));
-        scheduleWaitAndCast();
+        if (!spell.done()) {
+            vote(address(spell));
+            scheduleWaitAndCast();
+        }
+
         assertTrue(spell.done());
 
         // TODO: add these back into the test
@@ -655,8 +658,10 @@ contract DssSpellTest is DSTest, DSMath {
     }
 
     function testChainlogValues() public {
-        vote(address(spell));
-        scheduleWaitAndCast();
+        if (!spell.done()) {
+            vote(address(spell));
+            scheduleWaitAndCast();
+        }
         assertTrue(spell.done());
 
         assertEq(chainlog.getAddress("RWA001"), addr.addr("RWA001"));
@@ -668,9 +673,11 @@ contract DssSpellTest is DSTest, DSMath {
     }
 
     function testSpellIsCast_RWA001_INTEGRATION_BUMP() public {
-        vote(address(spell));
-        scheduleWaitAndCast();
-        assertTrue(spell.done());
+        if (!spell.done()) {
+            vote(address(spell));
+            scheduleWaitAndCast();
+            assertTrue(spell.done());
+        }
 
         bumpSpell = new BumpSpell();
         vote(address(bumpSpell));
@@ -687,9 +694,11 @@ contract DssSpellTest is DSTest, DSMath {
     }
 
     function testSpellIsCast_RWA001_INTEGRATION_TELL() public {
-        vote(address(spell));
-        scheduleWaitAndCast();
-        assertTrue(spell.done());
+        if (!spell.done()) {
+            vote(address(spell));
+            scheduleWaitAndCast();
+            assertTrue(spell.done());
+        }
 
         tellSpell = new TellSpell();
         vote(address(tellSpell));
@@ -710,9 +719,11 @@ contract DssSpellTest is DSTest, DSMath {
     }
 
     function testSpellIsCast_RWA001_INTEGRATION_TELL_CURE_GOOD() public {
-        vote(address(spell));
-        scheduleWaitAndCast();
-        assertTrue(spell.done());
+        if (!spell.done()) {
+            vote(address(spell));
+            scheduleWaitAndCast();
+            assertTrue(spell.done());
+        }
 
         tellSpell = new TellSpell();
         vote(address(tellSpell));
@@ -739,9 +750,11 @@ contract DssSpellTest is DSTest, DSMath {
     }
 
     function testFailSpellIsCast_RWA001_INTEGRATION_CURE() public {
-        vote(address(spell));
-        scheduleWaitAndCast();
-        assertTrue(spell.done());
+        if (!spell.done()) {
+            vote(address(spell));
+            scheduleWaitAndCast();
+            assertTrue(spell.done());
+        }
 
         cureSpell = new CureSpell();
         vote(address(cureSpell));
@@ -753,9 +766,11 @@ contract DssSpellTest is DSTest, DSMath {
     }
 
     function testSpellIsCast_RWA001_INTEGRATION_TELL_CULL() public {
-        vote(address(spell));
-        scheduleWaitAndCast();
-        assertTrue(spell.done());
+        if (!spell.done()) {
+            vote(address(spell));
+            scheduleWaitAndCast();
+            assertTrue(spell.done());
+        }
         assertTrue(oracle.good("RWA001-A"));
 
         tellSpell = new TellSpell();
@@ -783,9 +798,12 @@ contract DssSpellTest is DSTest, DSMath {
     }
 
     function testSpellIsCast_RWA001_OPERATOR_LOCK_DRAW_CONDUITS_WIPE_FREE() public {
-        vote(address(spell));
-        scheduleWaitAndCast();
-        assertTrue(spell.done());
+
+        if (!spell.done()) {
+            vote(address(spell));
+            scheduleWaitAndCast();
+            assertTrue(spell.done());
+        }
 
         hevm.warp(now + 10 days); // Let rate be > 1
 
@@ -885,9 +903,11 @@ contract DssSpellTest is DSTest, DSMath {
     }
 
     function testSpellIsCast_RWA001_END() public {
-        vote(address(spell));
-        scheduleWaitAndCast();
-        assertTrue(spell.done());
+        if (!spell.done()) {
+            vote(address(spell));
+            scheduleWaitAndCast();
+            assertTrue(spell.done());
+        }
 
         endSpell = new EndSpell();
         vote(address(endSpell));
