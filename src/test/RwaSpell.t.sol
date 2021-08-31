@@ -841,7 +841,7 @@ contract DssSpellTest is DSTest, DSMath {
         assertEq(dai.balanceOf(address(rwaconduitout)), 0);
         rwaurn.draw(1 * WAD);
 
-        (, uint rate,,,) = vat.ilks("RWA001-A");
+        (, uint256 rate,,,) = vat.ilks("RWA001-A");
 
         uint256 dustInVat = vat.dai(address(rwaurn));
 
