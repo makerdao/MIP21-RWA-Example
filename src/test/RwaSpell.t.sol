@@ -644,8 +644,11 @@ contract DssSpellTest is DSTest, DSMath {
             assertEq(spell.expiration(), (SPELL_CREATED + 30 days));
         }
 
-        vote(address(spell));
-        scheduleWaitAndCast();
+        if (!spell.done()) {
+            vote(address(spell));
+            scheduleWaitAndCast();
+        }
+
         assertTrue(spell.done());
 
         // TODO: add these back into the test
@@ -655,8 +658,10 @@ contract DssSpellTest is DSTest, DSMath {
     }
 
     function testChainlogValues() public {
-        vote(address(spell));
-        scheduleWaitAndCast();
+        if (!spell.done()) {
+            vote(address(spell));
+            scheduleWaitAndCast();
+        }
         assertTrue(spell.done());
 
         assertEq(chainlog.getAddress("RWA001"), addr.addr("RWA001"));
@@ -668,9 +673,11 @@ contract DssSpellTest is DSTest, DSMath {
     }
 
     function testSpellIsCast_RWA001_INTEGRATION_BUMP() public {
-        vote(address(spell));
-        scheduleWaitAndCast();
-        assertTrue(spell.done());
+        if (!spell.done()) {
+            vote(address(spell));
+            scheduleWaitAndCast();
+            assertTrue(spell.done());
+        }
 
         bumpSpell = new BumpSpell();
         vote(address(bumpSpell));
@@ -687,9 +694,11 @@ contract DssSpellTest is DSTest, DSMath {
     }
 
     function testSpellIsCast_RWA001_INTEGRATION_TELL() public {
-        vote(address(spell));
-        scheduleWaitAndCast();
-        assertTrue(spell.done());
+        if (!spell.done()) {
+            vote(address(spell));
+            scheduleWaitAndCast();
+            assertTrue(spell.done());
+        }
 
         tellSpell = new TellSpell();
         vote(address(tellSpell));
@@ -710,9 +719,11 @@ contract DssSpellTest is DSTest, DSMath {
     }
 
     function testSpellIsCast_RWA001_INTEGRATION_TELL_CURE_GOOD() public {
-        vote(address(spell));
-        scheduleWaitAndCast();
-        assertTrue(spell.done());
+        if (!spell.done()) {
+            vote(address(spell));
+            scheduleWaitAndCast();
+            assertTrue(spell.done());
+        }
 
         tellSpell = new TellSpell();
         vote(address(tellSpell));
@@ -739,9 +750,11 @@ contract DssSpellTest is DSTest, DSMath {
     }
 
     function testFailSpellIsCast_RWA001_INTEGRATION_CURE() public {
-        vote(address(spell));
-        scheduleWaitAndCast();
-        assertTrue(spell.done());
+        if (!spell.done()) {
+            vote(address(spell));
+            scheduleWaitAndCast();
+            assertTrue(spell.done());
+        }
 
         cureSpell = new CureSpell();
         vote(address(cureSpell));
@@ -753,9 +766,11 @@ contract DssSpellTest is DSTest, DSMath {
     }
 
     function testSpellIsCast_RWA001_INTEGRATION_TELL_CULL() public {
-        vote(address(spell));
-        scheduleWaitAndCast();
-        assertTrue(spell.done());
+        if (!spell.done()) {
+            vote(address(spell));
+            scheduleWaitAndCast();
+            assertTrue(spell.done());
+        }
         assertTrue(oracle.good("RWA001-A"));
 
         tellSpell = new TellSpell();
@@ -783,12 +798,21 @@ contract DssSpellTest is DSTest, DSMath {
     }
 
     function testSpellIsCast_RWA001_OPERATOR_LOCK_DRAW_CONDUITS_WIPE_FREE() public {
-        vote(address(spell));
-        scheduleWaitAndCast();
-        assertTrue(spell.done());
+
+        if (!spell.done()) {
+            vote(address(spell));
+            scheduleWaitAndCast();
+            assertTrue(spell.done());
+        }
 
         hevm.warp(now + 10 days); // Let rate be > 1
 
+        // put 1 conti of MKR into this contract to push
+        hevm.store(
+            address(gov),
+            keccak256(abi.encode(address(this), uint256(1))),
+            bytes32(uint256(1))
+        );
         hevm.store(
             address(rwagem),
             keccak256(abi.encode(address(this), uint256(0))),
@@ -805,6 +829,9 @@ contract DssSpellTest is DSTest, DSMath {
             keccak256(abi.encode(address(this), uint256(1))),
             bytes32(uint256(1))
         );
+
+        (uint256 preInk, uint256 preArt) = vat.urns(ilk, address(rwaurn));
+
         assertEq(rwagem.totalSupply(), 1 * WAD);
         assertEq(rwagem.balanceOf(address(this)), 1 * WAD);
         assertEq(rwaurn.can(address(this)), 1);
@@ -819,8 +846,9 @@ contract DssSpellTest is DSTest, DSMath {
         uint256 dustInVat = vat.dai(address(rwaurn));
 
         (uint256 ink, uint256 art) = vat.urns(ilk, address(rwaurn));
-        assertEq(ink, 1 * WAD);
-        assertEq(art, (1 * RAD + dustInVat) / rate);
+        assertEq(ink, 1 * WAD + preInk);
+        uint256 currArt = ((1 * RAD + dustInVat) / rate) + preArt;
+        assertTrue(art >= currArt - 2 && art <= currArt + 2); // approximation for vat rounding
         assertEq(dai.balanceOf(address(rwaconduitout)), 1 * WAD);
 
         // wards
@@ -850,8 +878,10 @@ contract DssSpellTest is DSTest, DSMath {
         hevm.warp(now + 10 days);
 
         (ink, art) = vat.urns(ilk, address(rwaurn));
-        assertEq(ink, 1 * WAD);
-        assertEq(art, (1 * RAD + dustInVat) / rate);
+        assertEq(ink, 1 * WAD + preInk);
+        currArt = ((1 * RAD + dustInVat) / rate) + preArt;
+        assertTrue(art >= currArt - 2 && art <= currArt + 2); // approximation for vat rounding
+
         (ink,) = vat.urns(ilk, address(this));
         assertEq(ink, 0);
 
@@ -878,16 +908,18 @@ contract DssSpellTest is DSTest, DSMath {
         rwaurn.wipe(daiToPay);
         rwaurn.free(1 * WAD);
         (ink, art) = vat.urns(ilk, address(rwaurn));
-        assertEq(ink, 0);
-        assertEq(art, 0);
+        assertEq(ink, preInk);
+        assertTrue(art < 4); // wad -> rad conversion in wipe leaves some dust
         (ink,) = vat.urns(ilk, address(this));
         assertEq(ink, 0);
     }
 
     function testSpellIsCast_RWA001_END() public {
-        vote(address(spell));
-        scheduleWaitAndCast();
-        assertTrue(spell.done());
+        if (!spell.done()) {
+            vote(address(spell));
+            scheduleWaitAndCast();
+            assertTrue(spell.done());
+        }
 
         endSpell = new EndSpell();
         vote(address(endSpell));
