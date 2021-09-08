@@ -20,6 +20,16 @@ export ETH_GAS=6000000
 
 [[ -z "$NAME" ]] && NAME="RWA-001";
 [[ -z "$SYMBOL" ]] && SYMBOL="RWA001";
+#
+# WARNING (2021-09-08): The system cannot currently accomodate any LETTER beyond
+# "A".  To add more letters, we will need to update the PIP naming convention
+# to include the letter.  Unfortunately, while fixing this on-chain and in our
+# code would be easy, RWA001 integrations may already be using the old PIP
+# naming convention.  So, before we can have new letters we must:
+# 1. Change the existing PIP naming convention
+# 2. Change all the places that depend on that convention (this script included)
+# 3. Make sure all integrations are ready to accomodate that new PIP name.
+#
 [[ -z "$LETTER" ]] && LETTER="A";
 [[ -z "$OPERATOR" ]] && OPERATOR="0xD23beB204328D7337e3d2Fb9F150501fDC633B0e"
 # [[ -z "$MIP21_LIQUIDATION_ORACLE" ]] && MIP21_LIQUIDATION_ORACLE="0xDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF"
