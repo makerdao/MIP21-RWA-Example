@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+//
 // Copyright (C) 2020, 2021 Lev Livnev <lev@liv.nev.org.uk>
 //
 // This program is free software: you can redistribute it and/or modify
