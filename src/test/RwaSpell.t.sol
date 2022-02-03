@@ -17,7 +17,8 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-pragma solidity 0.5.12;
+
+pragma solidity ~0.6.12;
 
 // hax: needed for the deploy scripts
 import "dss-gem-joins/join-auth.sol";
@@ -302,8 +303,8 @@ contract DssSpellTest is DSTest, DSMath {
     uint256 constant THOUSAND   = 10 ** 3;
     uint256 constant MILLION    = 10 ** 6;
     uint256 constant BILLION    = 10 ** 9;
-    uint256 constant WAD        = 10 ** 18;
-    uint256 constant RAY        = 10 ** 27;
+ // uint256 constant WAD        = 10 ** 18;
+ // uint256 constant RAY        = 10 ** 27;
     uint256 constant RAD        = 10 ** 45;
 
     event Debug(uint256 index, uint256 val);
