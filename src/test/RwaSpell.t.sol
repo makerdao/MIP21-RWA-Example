@@ -1,4 +1,24 @@
-pragma solidity 0.5.12;
+// SPDX-License-Identifier: AGPL-3.0-or-later
+//
+// RwaSpell.t.sol -- Tests for the spell contract
+//
+// Copyright (C) 2020-2021 Lev Livnev <lev@liv.nev.org.uk>
+// Copyright (C) 2021-2022 Dai Foundation
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+pragma solidity 0.6.12;
 
 // hax: needed for the deploy scripts
 import "dss-gem-joins/join-auth.sol";
@@ -283,8 +303,8 @@ contract DssSpellTest is DSTest, DSMath {
     uint256 constant THOUSAND   = 10 ** 3;
     uint256 constant MILLION    = 10 ** 6;
     uint256 constant BILLION    = 10 ** 9;
-    uint256 constant WAD        = 10 ** 18;
-    uint256 constant RAY        = 10 ** 27;
+ // uint256 constant WAD        = 10 ** 18;
+ // uint256 constant RAY        = 10 ** 27;
     uint256 constant RAD        = 10 ** 45;
 
     event Debug(uint256 index, uint256 val);
