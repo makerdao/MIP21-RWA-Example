@@ -31,10 +31,10 @@ import {Spotter} from "dss/spot.sol";
 import {DaiJoin} from "dss/join.sol";
 import {AuthGemJoin} from "dss-gem-joins/join-auth.sol";
 
-import {RwaToken} from "./RwaToken.sol";
-import {RwaInputConduit} from "./RwaInputConduit.sol";
-import {RwaOutputConduit} from "./RwaOutputConduit.sol";
-import {RwaLiquidationOracle} from "./RwaLiquidationOracle.sol";
+import {RwaToken} from "../tokens/RwaToken.sol";
+import {RwaInputConduit} from "../conduits/RwaInputConduit.sol";
+import {RwaOutputConduit} from "../conduits/RwaOutputConduit.sol";
+import {RwaLiquidationOracle} from "../oracles/RwaLiquidationOracle.sol";
 import {RwaUrn} from "./RwaUrn.sol";
 
 interface Hevm {
