@@ -57,5 +57,5 @@ ENV_VARS=$(${BASH_SOURCE%/*}/../lib/shell-utils/bin/json-to-env -x <<<"$MCD_ADDR
 if [[ $0 != "$BASH_SOURCE" ]]; then
   eval set -- "$ENV_VARS"
 else
-  echo $ENV_VARS
+  echo "$ENV_VARS"
 fi
