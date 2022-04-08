@@ -29,35 +29,41 @@ import "dss-interfaces/dss/DaiAbstract.sol";
 
 contract RwaUrn {
     // --- auth ---
-    mapping (address => uint256) public wards;
-    mapping (address => uint256) public can;
+    mapping(address => uint256) public wards;
+    mapping(address => uint256) public can;
+
     function rely(address usr) external auth {
         wards[usr] = 1;
         emit Rely(usr);
     }
+
     function deny(address usr) external auth {
         wards[usr] = 0;
         emit Deny(usr);
     }
-    modifier auth {
+
+    modifier auth() {
         require(wards[msg.sender] == 1, "RwaUrn/not-authorized");
         _;
     }
+
     function hope(address usr) external auth {
         can[usr] = 1;
         emit Hope(usr);
     }
+
     function nope(address usr) external auth {
         can[usr] = 0;
         emit Nope(usr);
     }
-    modifier operator {
+
+    modifier operator() {
         require(can[msg.sender] == 1, "RwaUrn/not-operator");
         _;
     }
 
-    VatAbstract  public vat;
-    JugAbstract  public jug;
+    VatAbstract public vat;
+    JugAbstract public jug;
     GemJoinAbstract public gemJoin;
     DaiJoinAbstract public daiJoin;
     address public outputConduit;
@@ -75,23 +81,31 @@ contract RwaUrn {
     event Quit(address indexed usr, uint256 wad);
 
     // --- math ---
-    uint256 constant RAY = 10 ** 27;
+    uint256 constant RAY = 10**27;
+
     function add(uint256 x, uint256 y) internal pure returns (uint256 z) {
         require((z = x + y) >= x);
     }
+
     function sub(uint256 x, uint256 y) internal pure returns (uint256 z) {
         require((z = x - y) <= x);
     }
+
     function mul(uint256 x, uint256 y) internal pure returns (uint256 z) {
         require(y == 0 || (z = x * y) / y == x);
     }
+
     function divup(uint256 x, uint256 y) internal pure returns (uint256 z) {
         z = add(x, sub(y, 1)) / y;
     }
 
     // --- init ---
     constructor(
-        address vat_, address jug_, address gemJoin_, address daiJoin_, address outputConduit_
+        address vat_,
+        address jug_,
+        address gemJoin_,
+        address daiJoin_,
+        address outputConduit_
     ) public {
         // requires in urn that outputConduit isn't address(0)
         vat = VatAbstract(vat_);
@@ -110,9 +124,11 @@ contract RwaUrn {
 
     // --- administration ---
     function file(bytes32 what, address data) external auth {
-        if (what == "outputConduit") { outputConduit = data; }
-        else if (what == "jug") { jug = JugAbstract(data); }
-        else revert("RwaUrn/unrecognised-param");
+        if (what == "outputConduit") {
+            outputConduit = data;
+        } else if (what == "jug") {
+            jug = JugAbstract(data);
+        } else revert("RwaUrn/unrecognised-param");
         emit File(what, data);
     }
 
@@ -123,38 +139,41 @@ contract RwaUrn {
         DSTokenAbstract(gemJoin.gem()).transferFrom(msg.sender, address(this), wad);
         // join with address this
         gemJoin.join(address(this), wad);
-        vat.frob(gemJoin.ilk(), address(this), address(this), address(this), int(wad), 0);
+        vat.frob(gemJoin.ilk(), address(this), address(this), address(this), int256(wad), 0);
         emit Lock(msg.sender, wad);
     }
+
     // n.b. that the operator takes the gem
     // and might not be the same operator who brought the gem
     function free(uint256 wad) external operator {
         require(wad <= 2**255, "RwaUrn/overflow");
-        vat.frob(gemJoin.ilk(), address(this), address(this), address(this), -int(wad), 0);
+        vat.frob(gemJoin.ilk(), address(this), address(this), address(this), -int256(wad), 0);
         gemJoin.exit(msg.sender, wad);
         emit Free(msg.sender, wad);
     }
+
     // n.b. DAI can only go to the output conduit
     function draw(uint256 wad) external operator {
         require(outputConduit != address(0));
         bytes32 ilk = gemJoin.ilk();
         jug.drip(ilk);
-        (,uint256 rate,,,) = vat.ilks(ilk);
+        (, uint256 rate, , , ) = vat.ilks(ilk);
         uint256 dart = divup(mul(RAY, wad), rate);
         require(dart <= 2**255 - 1, "RwaUrn/overflow");
-        vat.frob(ilk, address(this), address(this), address(this), 0, int(dart));
+        vat.frob(ilk, address(this), address(this), address(this), 0, int256(dart));
         daiJoin.exit(outputConduit, wad);
         emit Draw(msg.sender, wad);
     }
+
     // n.b. anyone can wipe
     function wipe(uint256 wad) external {
         daiJoin.join(address(this), wad);
         bytes32 ilk = gemJoin.ilk();
         jug.drip(ilk);
-        (,uint256 rate,,,) = vat.ilks(ilk);
+        (, uint256 rate, , , ) = vat.ilks(ilk);
         uint256 dart = mul(RAY, wad) / rate;
-        require(dart <= 2 ** 255, "RwaUrn/overflow");
-        vat.frob(ilk, address(this), address(this), address(this), 0, -int(dart));
+        require(dart <= 2**255, "RwaUrn/overflow");
+        vat.frob(ilk, address(this), address(this), address(this), 0, -int256(dart));
         emit Wipe(msg.sender, wad);
     }
 

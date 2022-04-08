@@ -1,3 +1,6 @@
+// prettier-disable
+// solhint-disable
+
 // SPDX-License-Identifier: AGPL-3.0-or-later
 //
 // addresses_kovan.sol -- List of Kovan addresses for testing
@@ -21,8 +24,7 @@
 pragma solidity 0.6.12;
 
 contract Addresses {
-
-    mapping (bytes32 => address) public addr;
+    mapping(bytes32 => address) public addr;
 
     constructor() public {
         addr["CHANGELOG"]                = 0xdA0Ab1e0017DEbCd72Be8599041a2aa3bA7e740F;

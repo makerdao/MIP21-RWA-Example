@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 //
-// RwaConduit.sol -- In and out conduits for Dai
+// RwaOutputConduit.sol -- In and out conduits for Dai
 //
 // Copyright (C) 2020-2021 Lev Livnev <lev@liv.nev.org.uk>
 // Copyright (C) 2021-2022 Dai Foundation
@@ -22,52 +22,37 @@ pragma solidity 0.6.12;
 
 import "dss-interfaces/dapp/DSTokenAbstract.sol";
 
-contract RwaInputConduit {
-    DSTokenAbstract public gov;
-    DSTokenAbstract public dai;
-    address public to;
-
-    event Push(address indexed to, uint256 wad);
-
-    constructor(address _gov, address _dai, address _to) public {
-        gov = DSTokenAbstract(_gov);
-        dai = DSTokenAbstract(_dai);
-        to = _to;
-    }
-
-    function push() external {
-        require(gov.balanceOf(msg.sender) > 0, "RwaConduit/no-gov");
-        uint256 balance = dai.balanceOf(address(this));
-        emit Push(to, balance);
-        dai.transfer(to, balance);
-    }
-}
-
 contract RwaOutputConduit {
     // --- auth ---
-    mapping (address => uint256) public wards;
-    mapping (address => uint256) public can;
+    mapping(address => uint256) public wards;
+    mapping(address => uint256) public can;
+
     function rely(address usr) external auth {
         wards[usr] = 1;
         emit Rely(usr);
     }
+
     function deny(address usr) external auth {
         wards[usr] = 0;
         emit Deny(usr);
     }
-    modifier auth {
+
+    modifier auth() {
         require(wards[msg.sender] == 1, "RwaConduit/not-authorized");
         _;
     }
+
     function hope(address usr) external auth {
         can[usr] = 1;
         emit Hope(usr);
     }
+
     function nope(address usr) external auth {
         can[usr] = 0;
         emit Nope(usr);
     }
-    modifier operator {
+
+    modifier operator() {
         require(can[msg.sender] == 1, "RwaConduit/not-operator");
         _;
     }
@@ -76,7 +61,7 @@ contract RwaOutputConduit {
     DSTokenAbstract public dai;
 
     address public to;
-    mapping (address => uint256) public bud;
+    mapping(address => uint256) public bud;
 
     // Events
     event Rely(address indexed usr);
@@ -100,6 +85,7 @@ contract RwaOutputConduit {
         bud[who] = 1;
         emit Kiss(who);
     }
+
     function diss(address who) public auth {
         if (to == who) to = address(0);
         bud[who] = 0;
@@ -112,6 +98,7 @@ contract RwaOutputConduit {
         to = who;
         emit Pick(who);
     }
+
     function push() external {
         require(to != address(0), "RwaConduit/to-not-set");
         require(gov.balanceOf(msg.sender) > 0, "RwaConduit/no-gov");

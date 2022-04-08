@@ -25,34 +25,42 @@ import "ds-token/token.sol";
 import "ds-math/math.sol";
 
 import {Vat} from "dss/vat.sol";
-import {Jug} from 'dss/jug.sol';
+import {Jug} from "dss/jug.sol";
 import {Spotter} from "dss/spot.sol";
 
-import {DaiJoin} from 'dss/join.sol';
+import {DaiJoin} from "dss/join.sol";
 import {AuthGemJoin} from "dss-gem-joins/join-auth.sol";
 
-import {RwaToken} from "../RwaToken.sol";
-import {RwaInputConduit, RwaOutputConduit} from "../RwaConduit.sol";
-import {RwaLiquidationOracle} from "../RwaLiquidationOracle.sol";
-import {RwaUrn} from "../RwaUrn.sol";
+import {RwaToken} from "./RwaToken.sol";
+import {RwaInputConduit} from "./RwaInputConduit.sol";
+import {RwaOutputConduit} from "./RwaOutputConduit.sol";
+import {RwaLiquidationOracle} from "./RwaLiquidationOracle.sol";
+import {RwaUrn} from "./RwaUrn.sol";
 
 interface Hevm {
     function warp(uint256) external;
-    function store(address,bytes32,bytes32) external;
+
+    function store(
+        address,
+        bytes32,
+        bytes32
+    ) external;
 }
 
 contract RwaUltimateRecipient {
-    DSToken dai;
+    DSToken internal dai;
+
     constructor(DSToken dai_) public {
         dai = dai_;
     }
+
     function transfer(address who, uint256 wad) public {
         dai.transfer(who, wad);
     }
 }
 
 contract TryCaller {
-    function do_call(address addr, bytes calldata data) external returns (bool) {
+    function doCall(address addr, bytes calldata data) external returns (bool) {
         bytes memory _data = data;
         assembly {
             let ok := call(gas(), addr, 0, add(_data, 0x20), mload(_data), 0, 0)
@@ -63,111 +71,118 @@ contract TryCaller {
         }
     }
 
-    function try_call(address addr, bytes calldata data) external returns (bool ok) {
-        (, bytes memory returned) = address(this).call(abi.encodeWithSignature("do_call(address,bytes)", addr, data));
+    function tryCall(address addr, bytes calldata data) external returns (bool ok) {
+        (, bytes memory returned) = address(this).call(abi.encodeWithSignature("doCall(address,bytes)", addr, data));
         ok = abi.decode(returned, (bool));
     }
 }
 
 contract RwaUser is TryCaller {
-    RwaUrn urn;
-    RwaOutputConduit outC;
-    RwaInputConduit inC;
+    RwaUrn internal urn;
+    RwaOutputConduit internal outC;
+    RwaInputConduit internal inC;
 
-    constructor(RwaUrn urn_, RwaOutputConduit outC_, RwaInputConduit inC_)
-        public {
+    constructor(
+        RwaUrn urn_,
+        RwaOutputConduit outC_,
+        RwaInputConduit inC_
+    ) public {
         urn = urn_;
         outC = outC_;
         inC = inC_;
     }
 
-    function approve(RwaToken tok, address who, uint256 wad) public {
+    function approve(
+        RwaToken tok,
+        address who,
+        uint256 wad
+    ) public {
         tok.approve(who, wad);
     }
+
     function pick(address who) public {
         outC.pick(who);
     }
+
     function lock(uint256 wad) public {
         urn.lock(wad);
     }
+
     function free(uint256 wad) public {
         urn.free(wad);
     }
+
     function draw(uint256 wad) public {
         urn.draw(wad);
     }
+
     function wipe(uint256 wad) public {
         urn.wipe(wad);
     }
-    function can_pick(address who) public returns (bool ok) {
-        ok = this.try_call(
-            address(outC),
-            abi.encodeWithSignature("pick(address)", who)
-        );
+
+    function canPick(address who) public returns (bool ok) {
+        ok = this.tryCall(address(outC), abi.encodeWithSignature("pick(address)", who));
     }
-    function can_draw(uint256 wad) public returns (bool ok) {
-        ok = this.try_call(
-            address(urn),
-            abi.encodeWithSignature("draw(uint256)", wad)
-        );
+
+    function canDraw(uint256 wad) public returns (bool ok) {
+        ok = this.tryCall(address(urn), abi.encodeWithSignature("draw(uint256)", wad));
     }
-    function can_free(uint256 wad) public returns (bool ok) {
-        ok = this.try_call(
-            address(urn),
-            abi.encodeWithSignature("free(uint256)", wad)
-        );
+
+    function canFree(uint256 wad) public returns (bool ok) {
+        ok = this.tryCall(address(urn), abi.encodeWithSignature("free(uint256)", wad));
     }
 }
 
 contract TryPusher is TryCaller {
-    function can_push(address wat) public returns (bool ok) {
-        ok = this.try_call(
-            address(wat),
-            abi.encodeWithSignature("push()")
-        );
+    function canPush(address wat) public returns (bool ok) {
+        ok = this.tryCall(address(wat), abi.encodeWithSignature("push()"));
     }
 }
 
-contract RwaExampleTest is DSTest, DSMath, TryPusher {
-    Hevm hevm;
+contract RwaUrnTest is DSTest, DSMath, TryPusher {
+    Hevm internal hevm;
 
-    DSToken gov;
-    DSToken dai;
-    RwaToken rwa;
+    DSToken internal gov;
+    DSToken internal dai;
+    RwaToken internal rwa;
 
-    Vat vat;
-    Jug jug;
-    address vow = address(123);
-    Spotter spotter;
+    Vat internal vat;
+    Jug internal jug;
+    address internal vow = address(123);
+    Spotter internal spotter;
 
-    DaiJoin daiJoin;
-    AuthGemJoin gemJoin;
+    DaiJoin internal daiJoin;
+    AuthGemJoin internal gemJoin;
 
-    RwaLiquidationOracle oracle;
-    RwaUrn urn;
+    RwaLiquidationOracle internal oracle;
+    RwaUrn internal urn;
 
-    RwaOutputConduit outConduit;
-    RwaInputConduit inConduit;
+    RwaOutputConduit internal outConduit;
+    RwaInputConduit internal inConduit;
 
-    RwaUser usr;
-    RwaUltimateRecipient rec;
+    RwaUser internal usr;
+    RwaUltimateRecipient internal rec;
 
     // debt ceiling of 400 dai
-    uint256 ceiling = 400 ether;
-    string doc = "Please sign on the dotted line.";
+    uint256 internal ceiling = 400 ether;
+    string internal doc = "Please sign on the dotted line.";
 
-    string  public constant name     = "RWA-001";
-    string  public constant symbol   = "RWA001";
+    // $ bc -l <<< 'scale=27; e( l(1.08)/(60 * 60 * 24 * 365) )'
+    uint256 internal constant EIGHT_PCT = 1000000002440418608258400030;
 
-    function rad(uint wad) internal pure returns (uint) {
-        return wad * 10 ** 27;
+    string internal name = "RWA-001";
+    string internal symbol = "RWA001";
+
+    function rad(uint256 wad) internal pure returns (uint256) {
+        return wad * 10**27;
     }
+
     function setUp() public {
         hevm = Hevm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
         hevm.warp(604411200);
 
         // deploy governance token
-        gov = new DSToken('GOV');
+        gov = new DSToken("GOV");
         gov.mint(100 ether);
 
         // deploy rwa token
@@ -194,18 +209,12 @@ contract RwaExampleTest is DSTest, DSMath, TryPusher {
         vat.file("acme", "line", rad(ceiling));
 
         jug.init("acme");
-        // $ bc -l <<< 'scale=27; e( l(1.08)/(60 * 60 * 24 * 365) )'
-        uint256 EIGHT_PCT = 1000000002440418608258400030;
         jug.file("acme", "duty", EIGHT_PCT);
 
         oracle = new RwaLiquidationOracle(address(vat), vow);
-        oracle.init(
-            "acme",
-            wmul(ceiling, 1.1 ether),
-            doc,
-            2 weeks);
+        oracle.init("acme", wmul(ceiling, 1.1 ether), doc, 2 weeks);
         vat.rely(address(oracle));
-        (,address pip,,) = oracle.ilks("acme");
+        (, address pip, , ) = oracle.ilks("acme");
 
         spotter.file("acme", "mat", RAY);
         spotter.file("acme", "pip", pip);
@@ -234,7 +243,7 @@ contract RwaExampleTest is DSTest, DSMath, TryPusher {
         outConduit.hope(address(usr));
         outConduit.kiss(address(rec));
 
-        usr.approve(rwa, address(urn), uint(-1));
+        usr.approve(rwa, address(urn), uint256(-1));
     }
 
     function test_file() public {
@@ -252,13 +261,13 @@ contract RwaExampleTest is DSTest, DSMath, TryPusher {
         // usr nominates ultimate recipient
         usr.pick(address(rec));
         // the dai can be pushed
-        assertTrue(can_push(address(outConduit)));
+        assertTrue(canPush(address(outConduit)));
 
         // unpick current rec
         usr.pick(address(0));
 
         // dai can't move
-        assertTrue(! can_push(address(outConduit)));
+        assertTrue(!canPush(address(outConduit)));
 
         // deploy and whitelist new rec
         RwaUltimateRecipient newrec = new RwaUltimateRecipient(dai);
@@ -272,7 +281,7 @@ contract RwaExampleTest is DSTest, DSMath, TryPusher {
 
     function test_cant_pick_unkissed_rec() public {
         RwaUltimateRecipient newrec = new RwaUltimateRecipient(dai);
-        assertTrue(! usr.can_pick(address(newrec)));
+        assertTrue(!usr.canPick(address(newrec)));
     }
 
     function test_lock_and_draw() public {
@@ -293,7 +302,7 @@ contract RwaExampleTest is DSTest, DSMath, TryPusher {
 
         assertEq(vat.dai(address(urn)), 463899466724981907732616508); // dust from divup
 
-        (, uint256 rate,,,) = vat.ilks("acme");
+        (, uint256 rate, , , ) = vat.ilks("acme");
         (ink, art) = vat.urns("acme", address(urn));
         assertEq(ink, 1 ether);
         assertEq(art, (rad(399 ether) + 463899466724981907732616508) / rate);
@@ -312,14 +321,14 @@ contract RwaExampleTest is DSTest, DSMath, TryPusher {
 
     function test_draw_exceeds_debt_ceiling() public {
         usr.lock(1 ether);
-        assertTrue(! usr.can_draw(500 ether));
+        assertTrue(!usr.canDraw(500 ether));
     }
 
     function test_cant_draw_unless_hoped() public {
         usr.lock(1 ether);
 
         RwaUser rando = new RwaUser(urn, outConduit, inConduit);
-        assertTrue(! rando.can_draw(100 ether));
+        assertTrue(!rando.canDraw(100 ether));
 
         urn.hope(address(rando));
         assertEq(dai.balanceOf(address(outConduit)), 0);
@@ -342,10 +351,10 @@ contract RwaExampleTest is DSTest, DSMath, TryPusher {
 
         inConduit.push();
         usr.wipe(100 ether);
-        assertTrue(! usr.can_free(1 ether));
+        assertTrue(!usr.canFree(1 ether));
         usr.free(0.1 ether);
 
-        (uint ink, uint art) = vat.urns("acme", address(urn));
+        (uint256 ink, uint256 art) = vat.urns("acme", address(urn));
         // > 300 because of accumulated interest
         assertTrue(art > 300 ether);
         assertTrue(art < 301 ether);
@@ -353,12 +362,17 @@ contract RwaExampleTest is DSTest, DSMath, TryPusher {
         assertEq(dai.balanceOf(address(inConduit)), 0 ether);
     }
 
-    function test_partial_repay_fuzz(uint256 drawAmount, uint256 wipeAmount, uint256 drawTime, uint256 wipeTime) public {
+    function test_partial_repay_fuzz(
+        uint256 drawAmount,
+        uint256 wipeAmount,
+        uint256 drawTime,
+        uint256 wipeTime
+    ) public {
         // Convert to reasonable numbers
-        drawAmount = (drawAmount % 300 ether) + 100 ether;      // 100-400 ether
-        wipeAmount = wipeAmount % drawAmount;                   // 0-drawAmount ether
-        drawTime = drawTime % 15 days;                       // 0-15 days
-        wipeTime = wipeTime % 15 days;                       // 0-15 days
+        drawAmount = (drawAmount % 300 ether) + 100 ether; // 100-400 ether
+        wipeAmount = wipeAmount % drawAmount; // 0-drawAmount ether
+        drawTime = drawTime % 15 days; // 0-15 days
+        wipeTime = wipeTime % 15 days; // 0-15 days
 
         usr.lock(1 ether);
 
@@ -381,11 +395,15 @@ contract RwaExampleTest is DSTest, DSMath, TryPusher {
         usr.wipe(wipeAmount);
     }
 
-    function test_repay_rounding_fuzz(uint256 drawAmt, uint256 drawTime, uint256 wipeTime) public {
+    function test_repay_rounding_fuzz(
+        uint256 drawAmt,
+        uint256 drawTime,
+        uint256 wipeTime
+    ) public {
         // Convert to reasonable numbers
         drawAmt = (drawAmt % 300 ether) + 99.99 ether; // 99.99-399.99 ether
-        drawTime = drawTime % 15 days;                       // 0-15 days
-        wipeTime = wipeTime % 15 days;                       // 0-15 days
+        drawTime = drawTime % 15 days; // 0-15 days
+        wipeTime = wipeTime % 15 days; // 0-15 days
 
         (uint256 ink, uint256 art) = vat.urns("acme", address(urn));
         assertEq(ink, 0);
@@ -403,7 +421,7 @@ contract RwaExampleTest is DSTest, DSMath, TryPusher {
         // A draw should leave less than 2 RAY dust
         assertTrue(urnVatDust < 2 * RAY);
 
-        (, uint256 rate,,,) = vat.ilks("acme");
+        (, uint256 rate, , , ) = vat.ilks("acme");
         (ink, art) = vat.urns("acme", address(urn));
         assertEq(ink, 1 ether);
         assertEq(art, (rad(drawAmt) + urnVatDust) / rate);
@@ -415,24 +433,16 @@ contract RwaExampleTest is DSTest, DSMath, TryPusher {
         hevm.warp(now + wipeTime);
         jug.drip("acme");
 
-        (, rate,,,) = vat.ilks("acme");
+        (, rate, , , ) = vat.ilks("acme");
 
-        uint256 fullWipeAmt = art * rate / RAY;
+        uint256 fullWipeAmt = (art * rate) / RAY;
         if (fullWipeAmt * RAY < art * rate) {
             fullWipeAmt += 1;
         }
 
         // Forcing extra DAI balance to pay accumulated fee
-        hevm.store(
-            address(dai),
-            keccak256(abi.encode(address(rec), uint256(3))),
-            bytes32(uint256(fullWipeAmt))
-        );
-        hevm.store(
-            address(dai),
-            bytes32(uint256(2)),
-            bytes32(uint256(fullWipeAmt))
-        );
+        hevm.store(address(dai), keccak256(abi.encode(address(rec), uint256(3))), bytes32(uint256(fullWipeAmt)));
+        hevm.store(address(dai), bytes32(uint256(2)), bytes32(uint256(fullWipeAmt)));
         hevm.store(
             address(vat),
             keccak256(abi.encode(address(daiJoin), uint256(5))),
@@ -468,200 +478,10 @@ contract RwaExampleTest is DSTest, DSMath, TryPusher {
         usr.wipe(400 ether);
         usr.free(1 ether);
 
-        (uint ink, uint art) = vat.urns("acme", address(urn));
+        (uint256 ink, uint256 art) = vat.urns("acme", address(urn));
         assertEq(art, 0);
         assertEq(ink, 0);
         assertEq(rwa.balanceOf(address(usr)), 1 ether);
-    }
-
-    function test_oracle_cure() public {
-        usr.lock(1 ether);
-        assertTrue(usr.can_draw(10 ether));
-
-        // flash the liquidation beacon
-        vat.file("acme", "line", rad(0));
-        oracle.tell("acme");
-
-        // not able to borrow
-        assertTrue(! usr.can_draw(10 ether));
-
-        hevm.warp(block.timestamp + 1 weeks);
-
-        oracle.cure("acme");
-        vat.file("acme", "line", rad(ceiling));
-        assertTrue(oracle.good("acme"));
-
-        // able to borrow
-        assertEq(dai.balanceOf(address(rec)), 0);
-        usr.draw(100 ether);
-        // usr nominates ultimate recipient
-        usr.pick(address(rec));
-        outConduit.push();
-        assertEq(dai.balanceOf(address(rec)), 100 ether);
-    }
-
-    function testFail_oracle_cure_unknown_ilk() public {
-        // unknown ilk ecma
-        oracle.cure("ecma");
-    }
-
-    function testFail_oracle_cure_not_in_remediation() public {
-        oracle.cure("acme");
-    }
-
-    function testFail_oracle_cure_not_in_remediation_anymore() public {
-        usr.lock(1 ether);
-        assertTrue(usr.can_draw(10 ether));
-
-        // flash the liquidation beacon
-        vat.file("acme", "line", rad(0));
-        oracle.tell("acme");
-
-        // not able to borrow
-        assertTrue(! usr.can_draw(10 ether));
-
-        hevm.warp(block.timestamp + 1 weeks);
-
-        oracle.cure("acme");
-        vat.file("acme", "line", rad(ceiling));
-        assertTrue(oracle.good("acme"));
-
-        // able to borrow
-        assertEq(dai.balanceOf(address(rec)), 0);
-        usr.draw(100 ether);
-        // usr nominates ultimate recipient
-        usr.pick(address(rec));
-        outConduit.push();
-        assertEq(dai.balanceOf(address(rec)), 100 ether);
-        oracle.cure("acme");
-    }
-
-    function test_oracle_cull() public {
-        usr.lock(1 ether);
-        // not at full utilisation
-        usr.draw(200 ether);
-
-        // flash the liquidation beacon
-        vat.file("acme", "line", rad(0));
-        oracle.tell("acme");
-
-        // not able to borrow
-        assertTrue(! usr.can_draw(10 ether));
-
-        hevm.warp(block.timestamp + 1 weeks);
-        // still in remeditation period
-        assertTrue(oracle.good("acme"));
-
-        hevm.warp(block.timestamp + 2 weeks);
-
-        assertEq(vat.gem("acme", address(oracle)), 0);
-        // remediation period has elapsed
-        assertTrue(! oracle.good("acme"));
-        oracle.cull("acme", address(urn));
-
-        assertTrue(! usr.can_draw(10 ether));
-
-        (uint ink, uint art) = vat.urns("acme", address(urn));
-        assertEq(ink, 0);
-        assertEq(art, 0);
-
-        assertEq(vat.sin(vow), rad(200 ether));
-
-        // after the write-off, the gem goes to the oracle
-        assertEq(vat.gem("acme", address(oracle)), 1 ether);
-
-        spotter.poke("acme");
-        (,,uint256 spot ,,) = vat.ilks("acme");
-        assertEq(spot, 0);
-    }
-
-    function test_oracle_unremedied_loan_is_not_good() public {
-        usr.lock(1 ether);
-        usr.draw(200 ether);
-
-        vat.file("acme", "line", 0);
-        oracle.tell("acme");
-        assertTrue(oracle.good("acme"));
-
-        hevm.warp(block.timestamp + 3 weeks);
-        assertTrue(! oracle.good("acme"));
-    }
-
-    function test_oracle_cull_two_urns() public {
-        RwaUrn urn2 = new RwaUrn(
-            address(vat),
-            address(jug),
-            address(gemJoin),
-            address(daiJoin),
-            address(outConduit)
-        );
-        gemJoin.rely(address(urn2));
-        RwaUser usr2 = new RwaUser(urn2, outConduit, inConduit);
-        usr.approve(rwa, address(this), uint(-1));
-        rwa.transferFrom(address(usr), address(usr2), 0.5 ether);
-        usr2.approve(rwa, address(urn2), uint(-1));
-        urn2.hope(address(usr2));
-        usr.lock(0.5 ether);
-        usr2.lock(0.5 ether);
-        usr.draw(100 ether);
-        usr2.draw(100 ether);
-
-        assertTrue(usr.can_draw(1 ether));
-        assertTrue(usr2.can_draw(1 ether));
-
-        vat.file("acme", "line", 0);
-        oracle.tell("acme");
-
-        assertTrue(! usr.can_draw(1 ether));
-        assertTrue(! usr2.can_draw(1 ether));
-
-        hevm.warp(block.timestamp + 3 weeks);
-
-        oracle.cull("acme", address(urn));
-        assertEq(vat.sin(vow), rad(100 ether));
-        oracle.cull("acme", address(urn2));
-        assertEq(vat.sin(vow), rad(200 ether));
-    }
-
-    function test_oracle_bump() public {
-        usr.lock(1 ether);
-        usr.draw(400 ether);
-
-        // usr nominates ultimate recipient
-        usr.pick(address(rec));
-        outConduit.push();
-
-        // can't borrow more, ceiling exceeded
-        assertTrue(! usr.can_draw(1 ether));
-
-        // increase ceiling by 200 dai
-        vat.file("acme", "line", rad(ceiling + 200 ether));
-
-        // still can't borrow much more, vault is unsafe
-        assertTrue(usr.can_draw(1 ether));
-        assertTrue(! usr.can_draw(200 ether));
-
-        // bump the price of acme
-        oracle.bump("acme", wmul(ceiling + 200 ether, 1.1 ether));
-        spotter.poke("acme");
-
-        usr.draw(200 ether);
-        // recipient must be picked again for 2nd push
-        usr.pick(address(rec));
-        outConduit.push();
-
-        assertEq(dai.balanceOf(address(rec)), 600 ether);
-    }
-
-    function testFail_oracle_bump_unknown_ilk() public {
-        // unknown ilk ecma
-        oracle.bump("ecma", wmul(ceiling + 200 ether, 1.1 ether));
-    }
-
-    function testFail_oracle_bump_in_remediation() public {
-        vat.file("acme", "line", 0);
-        oracle.tell("acme");
-        oracle.bump("acme", wmul(ceiling + 200 ether, 1.1 ether));
     }
 
     function test_quit() public {

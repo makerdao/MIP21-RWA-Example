@@ -1,0 +1,35 @@
+{
+  "name": "socgen-ofh-onboarding-prototype",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:ClioFinance/socgen-ofh-onboarding-prototype.git",
+  "author": "Henrique Barcelos <hbarcelos909@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "prepare": "husky install",
+    "prepublishOnly": "copyfiles -u 1 \"./src/**/*.sol\" ./",
+    "postpublish": "rimraf ./*.sol",
+    "prepack": "yarn prepublishOnly",
+    "postpack": "yarn postpublish",
+    "lint:fix": "run-s solhint:fix prettier:fix",
+    "lint:check": "run-s prettier:check solhint:check",
+    "prettier:fix": "yarn prettier:check --write",
+    "prettier:check": "prettier --check \"src/**/*.sol\"",
+    "solhint:fix": "yarn solhint:check --fix",
+    "solhint:check": "solhint --config ./.solhint.json \"src/**/*.sol\""
+  },
+  "devDependencies": {
+    "copyfiles": "^2.4.1",
+    "husky": ">=6",
+    "lint-staged": ">=10",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.5.1",
+    "prettier-plugin-solidity": "^1.0.0-beta.19",
+    "rimraf": "^3.0.2",
+    "solhint": "^3.3.7",
+    "solhint-plugin-prettier": "^0.0.5"
+  },
+  "lint-staged": {
+    "*.{js,css,md,sol}": "prettier --write"
+  }
+}

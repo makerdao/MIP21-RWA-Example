@@ -30,27 +30,57 @@ import "dss-interfaces/dss/ChainlogAbstract.sol";
 
 interface RwaLiquidationLike {
     function wards(address) external returns (uint256);
-    function ilks(bytes32) external returns (string memory,address,uint48,uint48);
+
+    function ilks(bytes32)
+        external
+        returns (
+            string memory,
+            address,
+            uint48,
+            uint48
+        );
+
     function rely(address) external;
+
     function deny(address) external;
-    function init(bytes32, uint256, string calldata, uint48) external;
+
+    function init(
+        bytes32,
+        uint256,
+        string calldata,
+        uint48
+    ) external;
+
     function tell(bytes32) external;
+
     function cure(bytes32) external;
+
     function cull(bytes32) external;
+
     function good(bytes32) external view;
 }
 
 interface RwaOutputConduitLike {
     function wards(address) external returns (uint256);
+
     function can(address) external returns (uint256);
+
     function rely(address) external;
+
     function deny(address) external;
+
     function hope(address) external;
+
     function nope(address) external;
+
     function bud(address) external returns (uint256);
+
     function kiss(address) external;
+
     function diss(address) external;
+
     function pick(address) external;
+
     function push() external;
 }
 
@@ -64,8 +94,7 @@ contract SpellAction {
     // The contracts in this list should correspond to MCD core contracts, verify
     // against the current release list at:
     //     https://changelog.makerdao.com/releases/kovan/latest/contracts.json
-    ChainlogAbstract constant CHANGELOG =
-        ChainlogAbstract(0xdA0Ab1e0017DEbCd72Be8599041a2aa3bA7e740F);
+    ChainlogAbstract constant CHANGELOG = ChainlogAbstract(0xdA0Ab1e0017DEbCd72Be8599041a2aa3bA7e740F);
 
     /*
         OPERATOR: 0xD23beB204328D7337e3d2Fb9F150501fDC633B0e
@@ -79,24 +108,24 @@ contract SpellAction {
         RWA001_A_OUTPUT_CONDUIT: 0xc54fEee07421EAB8000AC8c921c0De9DbfbE780B
         MIP21_LIQUIDATION_ORACLE: 0x2881c5dF65A8D81e38f7636122aFb456514804CC
     */
-    address constant RWA001_OPERATOR           = 0xD23beB204328D7337e3d2Fb9F150501fDC633B0e;
-    address constant RWA001_GEM                = 0x8F9A8cbBdfb93b72d646c8DEd6B4Fe4D86B315cB;
-    address constant MCD_JOIN_RWA001_A         = 0x029A554f252373e146f76Fa1a7455f73aBF4d38e;
-    address constant RWA001_A_URN              = 0x3Ba90D86f7E3218C48b7E0FCa959EcF43d9A30F4;
-    address constant RWA001_A_INPUT_CONDUIT    = 0xe37673730F03060922a2Bd8eC5987AfE3eA16a05;
-    address constant RWA001_A_OUTPUT_CONDUIT   = 0xc54fEee07421EAB8000AC8c921c0De9DbfbE780B;
-    address constant MIP21_LIQUIDATION_ORACLE  = 0x2881c5dF65A8D81e38f7636122aFb456514804CC;
+    address constant RWA001_OPERATOR = 0xD23beB204328D7337e3d2Fb9F150501fDC633B0e;
+    address constant RWA001_GEM = 0x8F9A8cbBdfb93b72d646c8DEd6B4Fe4D86B315cB;
+    address constant MCD_JOIN_RWA001_A = 0x029A554f252373e146f76Fa1a7455f73aBF4d38e;
+    address constant RWA001_A_URN = 0x3Ba90D86f7E3218C48b7E0FCa959EcF43d9A30F4;
+    address constant RWA001_A_INPUT_CONDUIT = 0xe37673730F03060922a2Bd8eC5987AfE3eA16a05;
+    address constant RWA001_A_OUTPUT_CONDUIT = 0xc54fEee07421EAB8000AC8c921c0De9DbfbE780B;
+    address constant MIP21_LIQUIDATION_ORACLE = 0x2881c5dF65A8D81e38f7636122aFb456514804CC;
 
-    uint256 constant THREE_PCT_RATE  = 1000000000937303470807876289;
+    uint256 constant THREE_PCT_RATE = 1000000000937303470807876289;
 
     // precision
-    uint256 constant public THOUSAND = 10 ** 3;
-    uint256 constant public MILLION  = 10 ** 6;
-    uint256 constant public WAD      = 10 ** 18;
-    uint256 constant public RAY      = 10 ** 27;
-    uint256 constant public RAD      = 10 ** 45;
+    uint256 public constant THOUSAND = 10**3;
+    uint256 public constant MILLION = 10**6;
+    uint256 public constant WAD = 10**18;
+    uint256 public constant RAY = 10**27;
+    uint256 public constant RAD = 10**45;
 
-    uint256 constant RWA001_A_INITIAL_DC    = 1000 * RAD;
+    uint256 constant RWA001_A_INITIAL_DC = 1000 * RAD;
     uint256 constant RWA001_A_INITIAL_PRICE = 1060 * WAD;
 
     // MIP13c3-SP4 Declaration of Intent & Commercial Points -
@@ -107,8 +136,8 @@ contract SpellAction {
     string constant DOC = "QmdmAUTU3sd9VkdfTZNQM6krc9jsKgF2pz7W1qvvfJo1xk";
 
     function execute() external {
-        address MCD_VAT  = ChainlogAbstract(CHANGELOG).getAddress("MCD_VAT");
-        address MCD_JUG  = ChainlogAbstract(CHANGELOG).getAddress("MCD_JUG");
+        address MCD_VAT = ChainlogAbstract(CHANGELOG).getAddress("MCD_VAT");
+        address MCD_JUG = ChainlogAbstract(CHANGELOG).getAddress("MCD_JUG");
         address MCD_SPOT = ChainlogAbstract(CHANGELOG).getAddress("MCD_SPOT");
 
         // RWA001-A collateral deploy
@@ -132,15 +161,16 @@ contract SpellAction {
         require(GemJoinAbstract(MCD_JOIN_RWA001_A).vat() == MCD_VAT, "join-vat-not-match");
         require(GemJoinAbstract(MCD_JOIN_RWA001_A).ilk() == ilk, "join-ilk-not-match");
         require(GemJoinAbstract(MCD_JOIN_RWA001_A).gem() == RWA001_GEM, "join-gem-not-match");
-        require(GemJoinAbstract(MCD_JOIN_RWA001_A).dec() == DSTokenAbstract(RWA001_GEM).decimals(), "join-dec-not-match");
+        require(
+            GemJoinAbstract(MCD_JOIN_RWA001_A).dec() == DSTokenAbstract(RWA001_GEM).decimals(),
+            "join-dec-not-match"
+        );
 
         // init the RwaLiquidationOracle
         // doc: "doc"
         // tau: 5 minutes
-        RwaLiquidationLike(MIP21_LIQUIDATION_ORACLE).init(
-            ilk, RWA001_A_INITIAL_PRICE, DOC, 300
-        );
-        (,address pip,,) = RwaLiquidationLike(MIP21_LIQUIDATION_ORACLE).ilks(ilk);
+        RwaLiquidationLike(MIP21_LIQUIDATION_ORACLE).init(ilk, RWA001_A_INITIAL_PRICE, DOC, 300);
+        (, address pip, , ) = RwaLiquidationLike(MIP21_LIQUIDATION_ORACLE).ilks(ilk);
         CHANGELOG.setAddress("PIP_RWA001", pip);
 
         // Set price feed for RWA001
@@ -186,27 +216,26 @@ contract SpellAction {
 }
 
 contract RwaSpell {
+    ChainlogAbstract constant CHANGELOG = ChainlogAbstract(0xdA0Ab1e0017DEbCd72Be8599041a2aa3bA7e740F);
 
-    ChainlogAbstract constant CHANGELOG =
-        ChainlogAbstract(0xdA0Ab1e0017DEbCd72Be8599041a2aa3bA7e740F);
+    DSPauseAbstract public pause = DSPauseAbstract(CHANGELOG.getAddress("MCD_PAUSE"));
+    address public action;
+    bytes32 public tag;
+    uint256 public eta;
+    bytes public sig;
+    uint256 public expiration;
+    bool public done;
 
-    DSPauseAbstract public pause =
-        DSPauseAbstract(CHANGELOG.getAddress("MCD_PAUSE"));
-    address         public action;
-    bytes32         public tag;
-    uint256         public eta;
-    bytes           public sig;
-    uint256         public expiration;
-    bool            public done;
-
-    string constant public description = "Kovan Spell Deploy";
+    string public constant description = "Kovan Spell Deploy";
 
     constructor() public {
         sig = abi.encodeWithSignature("execute()");
         action = address(new SpellAction());
         bytes32 _tag;
         address _action = action;
-        assembly { _tag := extcodehash(_action) }
+        assembly {
+            _tag := extcodehash(_action)
+        }
         tag = _tag;
         expiration = block.timestamp + 30 days;
     }
