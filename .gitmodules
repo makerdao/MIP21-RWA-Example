@@ -16,3 +16,6 @@
 [submodule "lib/dss"]
 	path = lib/dss
 	url = https://github.com/makerdao/dss
+[submodule "lib/shell-utils"]
+	path = lib/shell-utils
+	url = https://github.com/clio-finance/shell-utils
