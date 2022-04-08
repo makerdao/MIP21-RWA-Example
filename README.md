@@ -4,13 +4,16 @@
 
 - `RwaLiquidationOracle`: acts as a liquidation beacon for an off-chain enforcer.
 - `RwaUrn`: facilitates borrowing of DAI, delivering to a designated account.
-- `RwaOutputConduit`: disburses DAI 
-- `RwaInputConduit`: repays DAI
-- `RwaToken`: represents the RWA collateral in the system
+- `RwaUrn2`: variation of `RwaUrn` that allows authorized parties to flush out any outstanding DAI at any moment. 
+- `RwaOutputConduit`: disburses DAI.
+- `RwaOutputConduit2`: variation of `RwaOutputConduit` with an whitelist to control permissions to disburse DAI.
+- `RwaInputConduit`: repays DAI.
+- `RwaInputConduit2`: variation of `RwaInputConduit` with an whitelist to control permissions to repay DAI.
+- `RwaToken`: represents the RWA collateral in the system.
 
 ## Spells
 
-**⚠️*ATTENTION:** Spells are being moved to the [`ces-spells-goerli` repo](https://github.com/clio-finance/ces-spells-goerli/tree/master/template/rwa-onboarding), once the migration is completed, these files are going to be removed.
+**⚠️ ATTENTION:** Spells are being moved to the [`ces-spells-goerli` repo](https://github.com/clio-finance/ces-spells-goerli/tree/master/template/rwa-onboarding), once the migration is completed, these files are going to be removed.
 
 The following can be found in `src/RwaSpell.sol`:
 - `RwaSpell`: which deploys and configures the RWA collateral in MakerDAO in accordance with MIP21 
