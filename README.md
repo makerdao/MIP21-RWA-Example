@@ -15,10 +15,10 @@
 
 **⚠️ ATTENTION:** Spells are being moved to the [`ces-spells-goerli` repo](https://github.com/clio-finance/ces-spells-goerli/tree/master/template/rwa-onboarding), once the migration is completed, these files are going to be removed.
 
-The following can be found in `src/RwaSpell.sol`:
+The following can be found in [`src/spells/RwaSpell.sol`](./src/spells/RwaSpell.sol):
 - `RwaSpell`: which deploys and configures the RWA collateral in MakerDAO in accordance with MIP21 
 
-The following can be found in `src/test/RwaSpell.t.sol`:
+The following can be found in [`src/spells/RwaSpell.t.sol`](./src/spells/RwaSpell.t.sol):
 
 - `TellSpell`: which allows MakerDAO governance to initiate liquidation proceedings.
 - `CureSpell`: which allows MakerDAO governance to dismiss liquidation proceedings.
