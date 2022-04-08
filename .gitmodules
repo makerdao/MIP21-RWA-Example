@@ -19,3 +19,6 @@
 [submodule "lib/shell-utils"]
 	path = lib/shell-utils
 	url = https://github.com/clio-finance/shell-utils
+[submodule "lib/ds-token"]
+	path = lib/ds-token
+	url = https://github.com/dapphub/ds-token
