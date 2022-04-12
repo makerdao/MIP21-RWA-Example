@@ -22,7 +22,7 @@
 
 pragma solidity 0.6.12;
 
-import "../tokens/RwaToken.sol";
+import "../tokens/rwa/RwaToken.sol";
 
 /// @dev A contract that will receive RWA001, and allows for it to be retrieved.
 contract MockHolder {

@@ -31,7 +31,7 @@ import {Spotter} from "dss/spot.sol";
 import {DaiJoin} from "dss/join.sol";
 import {AuthGemJoin} from "dss-gem-joins/join-auth.sol";
 
-import {RwaToken} from "../tokens/RwaToken.sol";
+import {RwaToken} from "../tokens/rwa/RwaToken.sol";
 import {RwaInputConduit} from "../conduits/RwaInputConduit.sol";
 import {RwaOutputConduit} from "../conduits/RwaOutputConduit.sol";
 import {RwaLiquidationOracle} from "../oracles/RwaLiquidationOracle.sol";
