@@ -10,7 +10,7 @@
 - `RwaInputConduit`: repays DAI.
 - `RwaInputConduit2`: variation of `RwaInputConduit` with an whitelist to control permissions to repay DAI.
 - `RwaToken`: represents the RWA collateral in the system.
-- `RwaTokenFactory`: factory for deploying RwaToken.
+- `RwaTokenFactory`: factory of `RwaToken`s.
 
 ## Spells
 
