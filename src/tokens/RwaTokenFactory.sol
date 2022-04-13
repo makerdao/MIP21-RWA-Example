@@ -28,11 +28,14 @@ import {RwaToken} from "./RwaToken.sol";
 
 contract RwaTokenFactory {
     // --- registry ---
-    mapping (bytes32 => bool) public tokensData;
+    mapping (bytes32 => address) public tokensData;
     bytes32[] tokens;
 
     // --- auth ---
     mapping(address => uint256) public wards;
+
+    // -- events --
+    event TokenCreated(bytes32 symbol, address token);
 
     function rely(address usr) external auth {
         wards[usr] = 1;
@@ -80,12 +83,14 @@ contract RwaTokenFactory {
         require(bytes(name).length != 0, "RwaTokenFactory/name-not-set");
         require(bytes(symbol).length != 0, "RwaTokenFactory/symbol-not-set");
         bytes32 _symbol = stringToBytes32(symbol);
-        require(!tokensData[_symbol], "RwaTokenFactory/symbol-already-exist");
+        require(tokensData[_symbol] == address(0), "RwaTokenFactory/symbol-already-exist");
 
         RwaToken token = new RwaToken(name, symbol);
         token.transfer(recipient, 1 * WAD);
-        tokensData[_symbol] = true;
+        tokensData[_symbol] = address(token);
         tokens.push(_symbol);
+
+        emit TokenCreated(_symbol, address(token));
         return token;
     }
 

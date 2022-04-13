@@ -80,9 +80,11 @@ contract RwaTokenFactoryTest is DSTest {
     function test_canGetRegistry() public {
         RwaToken token = RwaTokenFactory(op._(address(tokenFactory))).createRwaToken(name, symbol, address(recipient));
         assertTrue(address(token) != address(0));
-        bytes32[1] memory tokens = [tokenFactory.stringToBytes32(symbol)];
+        bytes32 symbol = tokenFactory.stringToBytes32(symbol);
+        bytes32[1] memory tokens = [symbol];
         bytes32[] memory tokensFromFactory = tokenFactory.list();
         assertEq(tokenFactory.count(), tokens.length);
         assertEq(tokensFromFactory[0], tokens[0]);
+        assertEq(tokenFactory.tokensData(symbol), address(token));
     }
 }
