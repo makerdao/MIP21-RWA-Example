@@ -5,7 +5,6 @@
  * The only change is the solidity version, since this repo is using 0.6.x
  */
 
-////// src/RwaToken.sol
 // Copyright (C) 2020, 2021 Lev Livnev <lev@liv.nev.org.uk>
 //
 // This program is free software: you can redistribute it and/or modify
@@ -22,7 +21,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // SPDX-License-Identifier: GPL-3.0-or-later
-pragma solidity >=0.6.8 <0.7.0;
+pragma solidity 0.6.12;
 
 import {DSTest} from "ds-test/test.sol";
 import {RwaToken} from "./RwaToken.sol";

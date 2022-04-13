@@ -1,12 +1,4 @@
-/* prettier-disable */
-
-/**
- * This file is a copy of https://goerli.etherscan.io/address/0xeb7C7DE82c3b05BD4059f11aE8f43dD7f1595bce#code.
- * The only change is the solidity version, since this repo is using 0.6.x
- */
-
-////// src/RwaToken.sol
-// Copyright (C) 2020, 2021 Lev Livnev <lev@liv.nev.org.uk>
+// Copyright (C) 2022 Dai Foundation
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -22,7 +14,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // SPDX-License-Identifier: GPL-3.0-or-later
-pragma solidity >=0.6.8 <0.7.0;
+pragma solidity 0.6.12;
 
 import {DSTest} from "ds-test/test.sol";
 import {ForwardProxy} from "forward-proxy/ForwardProxy.sol";
@@ -57,11 +49,11 @@ contract RwaTokenFactoryTest is DSTest {
         tokenFactory.createRwaToken(name, symbol, address(this));
     }
 
-    function testFail_NameAndSymbolRequired() public {
+    function testFail_nameAndSymbolRequired() public {
         RwaTokenFactory(op._(address(tokenFactory))).createRwaToken("", "", address(this));
     }
 
-    function testFail_RecipientRequired() public {
+    function testFail_recipientRequired() public {
         RwaTokenFactory(op._(address(tokenFactory))).createRwaToken(name, symbol, address(0));
     }
 

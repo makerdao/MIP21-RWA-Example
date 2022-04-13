@@ -1,12 +1,5 @@
 /* prettier-disable */
-
-/**
- * This file is a copy of https://goerli.etherscan.io/address/0xeb7C7DE82c3b05BD4059f11aE8f43dD7f1595bce#code.
- * The only change is the solidity version, since this repo is using 0.6.x
- */
-
-////// src/RwaToken.sol
-// Copyright (C) 2020, 2021 Lev Livnev <lev@liv.nev.org.uk>
+// Copyright (C) 2022 Dai Foundation
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -22,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // SPDX-License-Identifier: GPL-3.0-or-later
-pragma solidity >=0.6.8 <0.7.0;
+pragma solidity 0.6.12;
 
 import {RwaToken} from "./RwaToken.sol";
 
@@ -35,7 +28,7 @@ contract RwaTokenFactory {
     mapping(address => uint256) public wards;
 
     // -- events --
-    event TokenCreated(bytes32 symbol, address token);
+    event RwaTokenCreated(string name, string indexed symbol, address indexed recipient);
 
     function rely(address usr) external auth {
         wards[usr] = 1;
@@ -82,7 +75,7 @@ contract RwaTokenFactory {
         require(recipient != address(0), "RwaTokenFactory/recipient-not-set");
         require(bytes(name).length != 0, "RwaTokenFactory/name-not-set");
         require(bytes(symbol).length != 0, "RwaTokenFactory/symbol-not-set");
-        bytes32 _symbol = stringToBytes32(symbol);
+        bytes32 _symbol = this.stringToBytes32(symbol);
         require(tokensData[_symbol] == address(0), "RwaTokenFactory/symbol-already-exist");
 
         RwaToken token = new RwaToken(name, symbol);
@@ -90,11 +83,11 @@ contract RwaTokenFactory {
         tokensData[_symbol] = address(token);
         tokens.push(_symbol);
 
-        emit TokenCreated(_symbol, address(token));
+        emit RwaTokenCreated(name, symbol, address(token));
         return token;
     }
 
-    function stringToBytes32(string memory source) public pure returns (bytes32 result) {
+    function stringToBytes32(string memory source) external pure returns (bytes32 result) {
         bytes memory tempEmptyStringTest = bytes(source);
         if (tempEmptyStringTest.length == 0) {
             return 0x0;
