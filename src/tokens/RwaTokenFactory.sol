@@ -1,4 +1,3 @@
-/* prettier-disable */
 // Copyright (C) 2022 Dai Foundation
 //
 // This program is free software: you can redistribute it and/or modify
@@ -111,7 +110,7 @@ contract RwaTokenFactory {
         tokensData[_symbol] = address(token);
         tokens.push(_symbol);
 
-        emit RwaTokenCreated(name, symbol, address(token));
+        emit RwaTokenCreated(name, symbol, address(recipient));
         return token;
     }
 
