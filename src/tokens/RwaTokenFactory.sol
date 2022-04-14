@@ -20,19 +20,17 @@ import {RwaToken} from "./RwaToken.sol";
 
 /**
  * @author Nazar Duchak <nazar@clio.finance>
- * @title An Factory for RWA Token.
+ * @title A Factory for RWA Tokens.
  */
 contract RwaTokenFactory {
-    /// @notice registry for RWA tokens (symbol => tokenAddress).
-    uint256 constant WAD = 10**18;
+    uint256 internal constant WAD = 10**18;
 
-    /// @notice registry for RWA tokens (symbol => tokenAddress).
-    mapping (bytes32 => address) public tokensData;
+    /// @notice registry for RWA tokens. `tokenAddresses[symbol]`
+    mapping(bytes32 => address) public tokenAddresses;
     /// @notice list of created RWA token symbols.
     bytes32[] public tokens;
     /// @notice Addresses with admin access on this contract. `wards[usr]`
     mapping(address => uint256) public wards;
-
 
     /**
      * @notice `usr` was granted admin access.
@@ -91,26 +89,30 @@ contract RwaTokenFactory {
     }
 
     /**
-     * @notice Deploy an RWA Token and mint `1 * WAD` to recipient address.
-     * @dev Only addresses with admin access(wards[msg.sender]) are able call this function
-     * @dev History of created tokens are stored in `tokenData` which is publicly accessible
+     * @notice Deploys a RWA Token and mint `1 * WAD` to the `recipient` address.
+     * @dev The history of all created tokens are stored in `tokenAddresses`, which is publicly accessible.
      * @param name Token name.
      * @param symbol Token symbol.
      * @param recipient Recipient address.
      */
-    function createRwaToken(string calldata name, string calldata symbol, address recipient) public auth  returns (RwaToken) {
+    function createRwaToken(
+        string calldata name,
+        string calldata symbol,
+        address recipient
+    ) public auth returns (RwaToken) {
         require(recipient != address(0), "RwaTokenFactory/recipient-not-set");
         require(bytes(name).length != 0, "RwaTokenFactory/name-not-set");
         require(bytes(symbol).length != 0, "RwaTokenFactory/symbol-not-set");
         bytes32 _symbol = this.stringToBytes32(symbol);
-        require(tokensData[_symbol] == address(0), "RwaTokenFactory/symbol-already-exist");
+        require(tokenAddresses[_symbol] == address(0), "RwaTokenFactory/symbol-already-exists");
 
         RwaToken token = new RwaToken(name, symbol);
-        token.transfer(recipient, 1 * WAD);
-        tokensData[_symbol] = address(token);
+        tokenAddresses[_symbol] = address(token);
         tokens.push(_symbol);
 
-        emit RwaTokenCreated(name, symbol, address(recipient));
+        token.transfer(recipient, 1 * WAD);
+
+        emit RwaTokenCreated(name, symbol, recipient);
         return token;
     }
 

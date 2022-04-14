@@ -77,6 +77,6 @@ contract RwaTokenFactoryTest is DSTest {
         bytes32[] memory tokensFromFactory = tokenFactory.list();
         assertEq(tokenFactory.count(), tokens.length);
         assertEq(tokensFromFactory[0], tokens[0]);
-        assertEq(tokenFactory.tokensData(symbol), address(token));
+        assertEq(tokenFactory.tokenAddresses(symbol), address(token));
     }
 }
