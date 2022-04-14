@@ -116,14 +116,14 @@ contract RwaTokenFactory {
     }
 
     /**
-     * @notice Get count of created RWA Tokens.
+     * @notice Gets the number of RWA Tokens created by this factory.
      */
     function count() external view returns (uint256) {
         return tokens.length;
     }
 
     /**
-     * @notice Get list of symbols of created RWA Tokens.
+     * @notice Gets the list of symbols of all RWA Tokens created by this factory.
      */
     function list() external view returns (bytes32[] memory) {
         return tokens;
