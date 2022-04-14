@@ -23,13 +23,13 @@ import {RwaToken} from "./RwaToken.sol";
 import {RwaTokenFactory} from "./RwaTokenFactory.sol";
 
 contract RwaTokenFactoryTest is DSTest {
-    uint256 constant WAD = 10 ** 18;
+    uint256 internal constant WAD = 10**18;
 
-    ForwardProxy op;
-    ForwardProxy recipient;
-    RwaTokenFactory tokenFactory;
-    string name = "RWA001-Test";
-    string symbol = "RWA001";
+    ForwardProxy internal op;
+    ForwardProxy internal recipient;
+    RwaTokenFactory internal tokenFactory;
+    string internal constant NAME = "RWA001-Test";
+    string internal constant SYMBOL = "RWA001";
 
     function setUp() public {
         op = new ForwardProxy();
@@ -46,7 +46,7 @@ contract RwaTokenFactoryTest is DSTest {
     }
 
     function testFail_failOnNotAuthorized() public {
-        tokenFactory.createRwaToken(name, symbol, address(this));
+        tokenFactory.createRwaToken(NAME, SYMBOL, address(this));
     }
 
     function testFail_nameAndSymbolRequired() public {
@@ -54,29 +54,39 @@ contract RwaTokenFactoryTest is DSTest {
     }
 
     function testFail_recipientRequired() public {
-        RwaTokenFactory(op._(address(tokenFactory))).createRwaToken(name, symbol, address(0));
+        RwaTokenFactory(op._(address(tokenFactory))).createRwaToken(NAME, SYMBOL, address(0));
     }
 
     function testFail_failOnAlreadyExistSymbol() public {
-        RwaToken token = RwaTokenFactory(op._(address(tokenFactory))).createRwaToken(name, symbol, address(recipient));
+        RwaToken token = RwaTokenFactory(op._(address(tokenFactory))).createRwaToken(NAME, SYMBOL, address(recipient));
         assertTrue(address(token) != address(0));
-        RwaTokenFactory(op._(address(tokenFactory))).createRwaToken(name, symbol, address(recipient));
+        RwaTokenFactory(op._(address(tokenFactory))).createRwaToken(NAME, SYMBOL, address(recipient));
     }
 
     function test_canCreateRwaToken() public {
-        RwaToken token = RwaTokenFactory(op._(address(tokenFactory))).createRwaToken(name, symbol, address(recipient));
+        RwaToken token = RwaTokenFactory(op._(address(tokenFactory))).createRwaToken(NAME, SYMBOL, address(recipient));
         assertTrue(address(token) != address(0));
         assertEq(token.balanceOf(address(recipient)), 1 * WAD);
     }
 
     function test_canGetRegistry() public {
-        RwaToken token = RwaTokenFactory(op._(address(tokenFactory))).createRwaToken(name, symbol, address(recipient));
+        RwaToken token = RwaTokenFactory(op._(address(tokenFactory))).createRwaToken(NAME, SYMBOL, address(recipient));
         assertTrue(address(token) != address(0));
-        bytes32 symbol = tokenFactory.stringToBytes32(symbol);
+        bytes32 symbol = tokenFactory.stringToBytes32(SYMBOL);
         bytes32[1] memory tokens = [symbol];
         bytes32[] memory tokensFromFactory = tokenFactory.list();
         assertEq(tokenFactory.count(), tokens.length);
         assertEq(tokensFromFactory[0], tokens[0]);
         assertEq(tokenFactory.tokenAddresses(symbol), address(token));
+    }
+
+    function test_truncatesLargeStrings() public {
+        string memory str40Bytes = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz";
+        string memory str32Bytes = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz";
+
+        bytes32 truncated = tokenFactory.stringToBytes32(str40Bytes);
+        bytes32 notTruncated = tokenFactory.stringToBytes32(str32Bytes);
+
+        assertEq(truncated, notTruncated);
     }
 }

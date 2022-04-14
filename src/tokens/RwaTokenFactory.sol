@@ -102,7 +102,8 @@ contract RwaTokenFactory {
         require(recipient != address(0), "RwaTokenFactory/recipient-not-set");
         require(bytes(name).length != 0, "RwaTokenFactory/name-not-set");
         require(bytes(symbol).length != 0, "RwaTokenFactory/symbol-not-set");
-        bytes32 _symbol = this.stringToBytes32(symbol);
+
+        bytes32 _symbol = stringToBytes32(symbol);
         require(tokenAddresses[_symbol] == address(0), "RwaTokenFactory/symbol-already-exists");
 
         RwaToken token = new RwaToken(name, symbol);
@@ -130,17 +131,19 @@ contract RwaTokenFactory {
     }
 
     /**
-     * @notice Helper function for converting string to bytes32
+     * @notice Helper function for converting string to bytes32.
+     * @dev If `source` is longer than 32 bytes (i.e.: 32 ASCII chars), then it will be truncated.
      * @param source String to convert.
+     * @return result The numeric ASCII representation of `source`, up to 32 chars long.
      */
-    function stringToBytes32(string memory source) external pure returns (bytes32 result) {
-        bytes memory tempEmptyStringTest = bytes(source);
-        if (tempEmptyStringTest.length == 0) {
+    function stringToBytes32(string calldata source) public pure returns (bytes32 result) {
+        bytes memory sourceAsBytes = bytes(source);
+        if (sourceAsBytes.length == 0) {
             return 0x0;
         }
 
         assembly {
-            result := mload(add(source, 32))
+            result := mload(add(sourceAsBytes, 32))
         }
     }
 }
