@@ -59,15 +59,14 @@ contract RwaTokenFactory {
     }
 
     /**
-     * @notice Gives `dsPause` admin access.
-     * @param dsPause DsPause contract address.
+     * @notice Gives `owner` admin access.
+     * @dev In MCD context, `owner` is meant to be a contract with root access to the system (i.e.: `DSPauseProxy`).
+     * @param owner The owner address.
      */
-    constructor(
-        address dsPause
-    ) public {
-        require(dsPause != address(0), "RwaTokenFactory/ds-pause-not-set");
-        wards[dsPause] = 1;
-        emit Rely(dsPause);
+    constructor(address owner) public {
+        require(owner != address(0), "RwaTokenFactory/owner-not-set");
+        wards[owner] = 1;
+        emit Rely(owner);
     }
 
     /**
