@@ -19,40 +19,52 @@ pragma solidity 0.6.12;
 
 import {RwaToken} from "./RwaToken.sol";
 
+/**
+ * @author Nazar Duchak <nazar@clio.finance>
+ * @title An Factory for RWA Token.
+ */
 contract RwaTokenFactory {
-    // --- registry ---
-    mapping (bytes32 => address) public tokensData;
-    bytes32[] tokens;
+    /// @notice registry for RWA tokens (symbol => tokenAddress).
+    uint256 constant WAD = 10**18;
 
-    // --- auth ---
+    /// @notice registry for RWA tokens (symbol => tokenAddress).
+    mapping (bytes32 => address) public tokensData;
+    /// @notice list of created RWA token symbols.
+    bytes32[] public tokens;
+    /// @notice Addresses with admin access on this contract. `wards[usr]`
     mapping(address => uint256) public wards;
 
-    // -- events --
+
+    /**
+     * @notice `usr` was granted admin access.
+     * @param usr The user address.
+     */
+    event Rely(address indexed usr);
+    /**
+     * @notice `usr` admin access was revoked.
+     * @param usr The user address.
+     */
+    event Deny(address indexed usr);
+    /**
+     * @notice RWA Token created.
+     * @param name Token name.
+     * @param symbol Token symbol.
+     * @param recipient Token address recipient.
+     */
     event RwaTokenCreated(string name, string indexed symbol, address indexed recipient);
 
-    function rely(address usr) external auth {
-        wards[usr] = 1;
-        emit Rely(usr);
-    }
-
-    function deny(address usr) external auth {
-        wards[usr] = 0;
-        emit Deny(usr);
-    }
-
+    /**
+     * @notice Check if `msg.sender` have admin access.
+     */
     modifier auth() {
         require(wards[msg.sender] == 1, "RwaTokenFactory/not-authorized");
         _;
     }
 
-    // Events
-    event Rely(address indexed usr);
-    event Deny(address indexed usr);
-
-    // --- math ---
-    uint256 constant WAD = 10**18;
-
-    // --- init ---
+    /**
+     * @notice Gives `dsPause` admin access.
+     * @param dsPause DsPause contract address.
+     */
     constructor(
         address dsPause
     ) public {
@@ -61,16 +73,32 @@ contract RwaTokenFactory {
         emit Rely(dsPause);
     }
 
-    // The number of deployed tokens
-    function count() external view returns (uint256) {
-        return tokens.length;
+    /**
+     * @notice Grants `usr` admin access to this contract.
+     * @param usr The user address.
+     */
+    function rely(address usr) external auth {
+        wards[usr] = 1;
+        emit Rely(usr);
     }
 
-    // Return an array of the deployed tokens
-    function list() external view returns (bytes32[] memory) {
-        return tokens;
+    /**
+     * @notice Revokes `usr` admin access from this contract.
+     * @param usr The user address.
+     */
+    function deny(address usr) external auth {
+        wards[usr] = 0;
+        emit Deny(usr);
     }
 
+    /**
+     * @notice Deploy an RWA Token and mint `1 * WAD` to recipient address.
+     * @dev Only addresses with admin access(wards[msg.sender]) are able call this function
+     * @dev History of created tokens are stored in `tokenData` which is publicly accessible
+     * @param name Token name.
+     * @param symbol Token symbol.
+     * @param recipient Recipient address.
+     */
     function createRwaToken(string calldata name, string calldata symbol, address recipient) public auth  returns (RwaToken) {
         require(recipient != address(0), "RwaTokenFactory/recipient-not-set");
         require(bytes(name).length != 0, "RwaTokenFactory/name-not-set");
@@ -87,6 +115,24 @@ contract RwaTokenFactory {
         return token;
     }
 
+    /**
+     * @notice Get count of created RWA Tokens.
+     */
+    function count() external view returns (uint256) {
+        return tokens.length;
+    }
+
+    /**
+     * @notice Get list of symbols of created RWA Tokens.
+     */
+    function list() external view returns (bytes32[] memory) {
+        return tokens;
+    }
+
+    /**
+     * @notice Helper function for converting string to bytes32
+     * @param source String to convert.
+     */
     function stringToBytes32(string memory source) external pure returns (bytes32 result) {
         bytes memory tempEmptyStringTest = bytes(source);
         if (tempEmptyStringTest.length == 0) {
