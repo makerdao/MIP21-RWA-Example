@@ -25,15 +25,22 @@ import {RwaTokenFactory} from "./RwaTokenFactory.sol";
 contract RwaTokenFactoryTest is DSTest {
     uint256 internal constant WAD = 10**18;
 
+<<<<<<< Updated upstream
     ForwardProxy internal op;
     ForwardProxy internal recipient;
     RwaTokenFactory internal tokenFactory;
     string internal constant NAME = "RWA001-Test";
     string internal constant SYMBOL = "RWA001";
+=======
+    ForwardProxy recipient;
+    RwaTokenFactory tokenFactory;
+    string name = "RWA001-Test";
+    string symbol = "RWA001";
+>>>>>>> Stashed changes
 
     function setUp() public {
-        op = new ForwardProxy();
         recipient = new ForwardProxy();
+<<<<<<< Updated upstream
         tokenFactory = new RwaTokenFactory(address(op));
     }
 
@@ -47,6 +54,9 @@ contract RwaTokenFactoryTest is DSTest {
 
     function testFail_failOnNotAuthorized() public {
         tokenFactory.createRwaToken(NAME, SYMBOL, address(this));
+=======
+        tokenFactory = new RwaTokenFactory();
+>>>>>>> Stashed changes
     }
 
     function testFail_nameAndSymbolRequired() public {
