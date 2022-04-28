@@ -20,13 +20,13 @@
 
 pragma solidity 0.6.12;
 
-import "dss-interfaces/dss/VatAbstract.sol";
-import "dss-interfaces/dapp/DSPauseAbstract.sol";
-import "dss-interfaces/dss/JugAbstract.sol";
-import "dss-interfaces/dss/SpotAbstract.sol";
-import "dss-interfaces/dss/GemJoinAbstract.sol";
-import "dss-interfaces/dapp/DSTokenAbstract.sol";
-import "dss-interfaces/dss/ChainlogAbstract.sol";
+import "./interfaces/VatAbstract.sol";
+import "./interfaces/DSPauseAbstract.sol";
+import "./interfaces/JugAbstract.sol";
+import "./interfaces/SpotAbstract.sol";
+import "./interfaces/GemJoinAbstract.sol";
+import "./interfaces/DSTokenAbstract.sol";
+import "./interfaces/ChainlogAbstract.sol";
 
 interface RwaLiquidationLike {
     function wards(address) external returns (uint256);
