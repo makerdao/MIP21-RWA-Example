@@ -20,12 +20,12 @@
 
 pragma solidity 0.6.12;
 
-import "dss-interfaces/dss/VatAbstract.sol";
-import "dss-interfaces/dss/JugAbstract.sol";
-import "dss-interfaces/dapp/DSTokenAbstract.sol";
-import "dss-interfaces/dss/GemJoinAbstract.sol";
-import "dss-interfaces/dss/DaiJoinAbstract.sol";
-import "dss-interfaces/dss/DaiAbstract.sol";
+import "./interfaces/VatAbstract.sol";
+import "./interfaces/JugAbstract.sol";
+import "./interfaces/DSTokenAbstract.sol";
+import "./interfaces/GemJoinAbstract.sol";
+import "./interfaces/DaiJoinAbstract.sol";
+import "./interfaces/DaiAbstract.sol";
 
 contract RwaUrn {
     // --- auth ---

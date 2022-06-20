@@ -26,9 +26,26 @@ import "ds-value/value.sol";
 
 import "ds-math/math.sol";
 import "ds-test/test.sol";
-import "dss-interfaces/Interfaces.sol";
 import "./rates.sol";
 import "./addresses_kovan.sol";
+import "../interfaces/ChainlogAbstract.sol";
+import "../interfaces/EndAbstract.sol";
+import "../interfaces/DSPauseAbstract.sol";
+import "../interfaces/VatAbstract.sol";
+import "../interfaces/DSChiefAbstract.sol";
+import "../interfaces/DSValueAbstract.sol";
+import "../interfaces/CatAbstract.sol";
+import "../interfaces/JugAbstract.sol";
+import "../interfaces/VowAbstract.sol";
+import "../interfaces/PotAbstract.sol";
+import "../interfaces/SpotAbstract.sol";
+import "../interfaces/DSTokenAbstract.sol";
+import "../interfaces/IlkRegistryAbstract.sol";
+import "../interfaces/OsmMomAbstract.sol";
+import "../interfaces/FlipperMomAbstract.sol";
+import "../interfaces/FlipAbstract.sol";
+import "../interfaces/GemJoinAbstract.sol";
+import "../interfaces/DSSpellAbstract.sol";
 
 import {RwaSpell, SpellAction} from "../RwaSpell.sol";
 
